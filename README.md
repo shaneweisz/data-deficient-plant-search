@@ -13,6 +13,8 @@ To motivate why this is important, we start by understanding how many GBIF sampl
 - **9.3%** have just 1 occurrence
 - Top species: *Urtica dioica* (Stinging nettle) with **1.8M** occurrences
 
+![Distribution of plant species occurrence counts](docs/plant_species_distribution_plots.png)
+
 ## Web App
 
 ```bash
