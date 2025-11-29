@@ -17,6 +17,8 @@ interface SpeciesDetails {
   family: string;
   genus: string;
   gbifUrl: string;
+  imageUrl?: string;
+  occurrenceCount?: number;
 }
 
 interface Stats {
@@ -57,14 +59,17 @@ const FILTER_PRESETS: Record<FilterPreset, { minCount: number; maxCount: number;
 export default function Home() {
   const [data, setData] = useState<SpeciesRecord[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
-  const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, totalPages: 0 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [filterPreset, setFilterPreset] = useState<FilterPreset>("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [selectedSpecies, setSelectedSpecies] = useState<SpeciesDetails | null>(null);
   const [speciesCache, setSpeciesCache] = useState<Record<number, SpeciesDetails>>({});
-  const [loadingSpecies, setLoadingSpecies] = useState<number | null>(null);
+  const [loadingSpecies, setLoadingSpecies] = useState<Set<number>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SpeciesDetails[] | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -90,13 +95,65 @@ export default function Home() {
     fetchData();
   }, [fetchData]);
 
+  // Auto-preload species details for all visible rows
+  useEffect(() => {
+    const preloadSpeciesDetails = async () => {
+      const keysToLoad = data
+        .map((record) => record.species_key)
+        .filter((key) => !speciesCache[key] && !loadingSpecies.has(key));
+
+      if (keysToLoad.length === 0) return;
+
+      // Mark all as loading
+      setLoadingSpecies((prev) => new Set([...prev, ...keysToLoad]));
+
+      // Fetch all in parallel (with some concurrency limit)
+      const batchSize = 10;
+      for (let i = 0; i < keysToLoad.length; i += batchSize) {
+        const batch = keysToLoad.slice(i, i + batchSize);
+        const results = await Promise.all(
+          batch.map(async (speciesKey) => {
+            try {
+              const response = await fetch(`/api/species/${speciesKey}`);
+              if (response.ok) {
+                return await response.json();
+              }
+            } catch (error) {
+              console.error(`Failed to fetch species ${speciesKey}:`, error);
+            }
+            return null;
+          })
+        );
+
+        // Update cache with results
+        const newCache: Record<number, SpeciesDetails> = {};
+        results.forEach((details) => {
+          if (details) {
+            newCache[details.key] = details;
+          }
+        });
+
+        setSpeciesCache((prev) => ({ ...prev, ...newCache }));
+      }
+
+      // Clear loading state
+      setLoadingSpecies((prev) => {
+        const next = new Set(prev);
+        keysToLoad.forEach((key) => next.delete(key));
+        return next;
+      });
+    };
+
+    preloadSpeciesDetails();
+  }, [data, speciesCache, loadingSpecies]);
+
   const fetchSpeciesDetails = async (speciesKey: number) => {
     if (speciesCache[speciesKey]) {
       setSelectedSpecies(speciesCache[speciesKey]);
       return;
     }
 
-    setLoadingSpecies(speciesKey);
+    setLoadingSpecies((prev) => new Set([...prev, speciesKey]));
     try {
       const response = await fetch(`/api/species/${speciesKey}`);
       const details: SpeciesDetails = await response.json();
@@ -105,12 +162,40 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to fetch species details:", error);
     }
-    setLoadingSpecies(null);
+    setLoadingSpecies((prev) => {
+      const next = new Set(prev);
+      next.delete(speciesKey);
+      return next;
+    });
   };
 
   const handleFilterChange = (preset: FilterPreset) => {
     setFilterPreset(preset);
     setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      setSearchResults(null);
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+      const data = await response.json();
+      setSearchResults(data.results || []);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    }
+    setSearching(false);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults(null);
   };
 
   const handleRefreshFromGBIF = async () => {
@@ -242,97 +327,217 @@ export default function Home() {
         {/* Distribution Charts */}
         <DistributionCharts />
 
-        {/* Filters and Controls */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex gap-2">
-            {(Object.keys(FILTER_PRESETS) as FilterPreset[]).map((preset) => (
-              <button
-                key={preset}
-                onClick={() => handleFilterChange(preset)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filterPreset === preset
-                    ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                    : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700"
-                }`}
+        {/* Search */}
+        <div className="mb-6">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for a plant species..."
+                className="w-full px-4 py-2 pl-10 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {FILTER_PRESETS[preset].label}
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <button
+              type="submit"
+              disabled={searching}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {searching ? "Searching..." : "Search"}
+            </button>
+            {searchResults !== null && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700"
+              >
+                Clear
               </button>
-            ))}
-          </div>
-          <button
-            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700"
-          >
-            Sort: {sortOrder === "desc" ? "Most → Least" : "Least → Most"}
-          </button>
+            )}
+          </form>
         </div>
+
+        {/* Filters and Controls - hidden during search */}
+        {searchResults === null && (
+          <>
+            <div className="flex flex-wrap gap-4 mb-6">
+              <div className="flex gap-2">
+                {(Object.keys(FILTER_PRESETS) as FilterPreset[]).map((preset) => (
+                  <button
+                    key={preset}
+                    onClick={() => handleFilterChange(preset)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filterPreset === preset
+                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                        : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    {FILTER_PRESETS[preset].label}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700 dark:hover:bg-zinc-700"
+              >
+                Sort: {sortOrder === "desc" ? "Most → Least" : "Least → Most"}
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Results count */}
         <div className="text-sm text-zinc-500 mb-4">
-          Showing {formatNumber(pagination.total)} species
-          {filterPreset !== "all" && ` (filtered: ${FILTER_PRESETS[filterPreset].label})`}
+          {searchResults !== null
+            ? searchResults.length === 0
+              ? "No species found"
+              : `Found ${searchResults.length} species matching "${searchQuery}"`
+            : `Showing ${formatNumber(pagination.total)} species${filterPreset !== "all" ? ` (filtered: ${FILTER_PRESETS[filterPreset].label})` : ""}`}
         </div>
 
         {/* Data Table */}
         <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden mb-6">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-fixed">
               <thead className="bg-zinc-50 dark:bg-zinc-800">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                    Rank
+                  {searchResults === null && (
+                    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider w-20">
+                      Rank
+                    </th>
+                  )}
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider w-20">
+                    Image
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                    Species Key
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                    Common Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Species Name
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider w-32">
                     Occurrences
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {loading ? (
+                {loading && searchResults === null ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-zinc-500">
+                    <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
                       Loading...
                     </td>
                   </tr>
+                ) : searching ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
+                      Searching...
+                    </td>
+                  </tr>
+                ) : searchResults !== null ? (
+                  searchResults.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
+                        No species found matching &quot;{searchQuery}&quot;
+                      </td>
+                    </tr>
+                  ) : (
+                    searchResults.map((species) => (
+                      <tr
+                        key={species.key}
+                        className="hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
+                        onClick={() => setSelectedSpecies(species)}
+                      >
+                        <td className="px-4 py-2">
+                          {species.imageUrl ? (
+                            <img
+                              src={species.imageUrl}
+                              alt={species.canonicalName}
+                              className="w-16 h-16 object-cover rounded bg-zinc-100 dark:bg-zinc-800"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded flex items-center justify-center">
+                              <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400">
+                          {species.vernacularName || <span className="text-zinc-400">—</span>}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-zinc-900 dark:text-zinc-100 italic">
+                          {species.canonicalName}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
+                          {species.occurrenceCount !== undefined ? formatNumber(species.occurrenceCount) : "—"}
+                        </td>
+                      </tr>
+                    ))
+                  )
                 ) : (
                   data.map((record, index) => {
                     const rank = sortOrder === "desc"
                       ? (pagination.page - 1) * pagination.limit + index + 1
                       : pagination.total - ((pagination.page - 1) * pagination.limit + index);
                     const cached = speciesCache[record.species_key];
+                    const isLoading = loadingSpecies.has(record.species_key);
                     return (
                       <tr
                         key={record.species_key}
                         className="hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
-                        onClick={() => fetchSpeciesDetails(record.species_key)}
+                        onClick={() => {
+                          if (cached) setSelectedSpecies(cached);
+                          else fetchSpeciesDetails(record.species_key);
+                        }}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500">
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-zinc-500">
                           #{formatNumber(rank)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-zinc-600 dark:text-zinc-400">
-                          {record.species_key}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
-                          {loadingSpecies === record.species_key ? (
-                            <span className="text-zinc-400">Loading...</span>
-                          ) : cached ? (
-                            <span>
-                              <span className="italic">{cached.canonicalName}</span>
-                              {cached.vernacularName && (
-                                <span className="text-zinc-500 ml-2">({cached.vernacularName})</span>
-                              )}
-                            </span>
+                        <td className="px-4 py-2">
+                          {isLoading ? (
+                            <div className="w-16 h-16 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+                          ) : cached?.imageUrl ? (
+                            <img
+                              src={cached.imageUrl}
+                              alt={cached.canonicalName}
+                              className="w-16 h-16 object-cover rounded bg-zinc-100 dark:bg-zinc-800"
+                            />
                           ) : (
-                            <span className="text-zinc-400">Click to load</span>
+                            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded flex items-center justify-center">
+                              <svg className="w-8 h-8 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
+                        <td className="px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400">
+                          {isLoading ? (
+                            <span className="text-zinc-400 animate-pulse">...</span>
+                          ) : cached?.vernacularName ? (
+                            cached.vernacularName
+                          ) : (
+                            <span className="text-zinc-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-zinc-900 dark:text-zinc-100 italic">
+                          {isLoading ? (
+                            <span className="text-zinc-400 animate-pulse">Loading...</span>
+                          ) : cached ? (
+                            cached.canonicalName
+                          ) : (
+                            <span className="text-zinc-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
                           {formatNumber(record.occurrence_count)}
                         </td>
                       </tr>
@@ -344,7 +549,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination - hidden when search results are shown */}
+        {searchResults === null && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-zinc-500">
             Page {pagination.page} of {formatNumber(pagination.totalPages)}
@@ -366,6 +572,7 @@ export default function Home() {
             </button>
           </div>
         </div>
+        )}
 
         {/* Species Detail Modal */}
         {selectedSpecies && (
@@ -395,6 +602,15 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
+              {selectedSpecies.imageUrl && (
+                <div className="mb-4">
+                  <img
+                    src={selectedSpecies.imageUrl}
+                    alt={selectedSpecies.canonicalName}
+                    className="w-full h-48 object-cover rounded-lg bg-zinc-100 dark:bg-zinc-800"
+                  />
+                </div>
+              )}
               <dl className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <dt className="text-zinc-500">Kingdom</dt>
