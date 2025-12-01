@@ -1,14 +1,14 @@
 {
-  "total_species": 354354,
-  "total_occurrences": 460906161,
-  "max_occurrences": 1830435,
+  "total_species": 354372,
+  "total_occurrences": 460969678,
+  "max_occurrences": 1830477,
   "min_occurrences": 1,
   "median_occurrences": 24,
-  "mean_occurrences": 1300.694110973772,
-  "species_with_1": 32946,
-  "species_with_lte_5": 93677,
-  "species_with_lte_10": 129589,
-  "species_with_lte_50": 221213,
-  "species_with_lte_100": 257433,
-  "species_with_lte_1000": 330417
+  "mean_occurrences": 1300.8072816136714,
+  "species_with_1": 32941,
+  "species_with_lte_5": 93670,
+  "species_with_lte_10": 129591,
+  "species_with_lte_50": 221268,
+  "species_with_lte_100": 257462,
+  "species_with_lte_1000": 330428
 }

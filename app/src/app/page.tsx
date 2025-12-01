@@ -89,7 +89,6 @@ interface ApiResponse {
 
 type FilterPreset = "all" | "dataDeficient" | "veryRare" | "singletons";
 type RegionMode = "global" | "cambridge";
-type ExpandedTab = "details" | "map";
 
 // ============================================================================
 // Constants
@@ -211,217 +210,99 @@ function StatsCards({ stats }: { stats: Stats }) {
 }
 
 interface ExpandedRowProps {
-  species: SpeciesDetails | null;
   speciesKey: number;
-  occurrenceCount: number;
   regionMode: RegionMode;
-  onClose: () => void;
   mounted: boolean;
   colSpan: number;
 }
 
-function ExpandedRow({ species, speciesKey, occurrenceCount, regionMode, onClose, mounted, colSpan }: ExpandedRowProps) {
-  const [activeTab, setActiveTab] = useState<ExpandedTab>("details");
+function ExpandedRow({ speciesKey, regionMode, mounted, colSpan }: ExpandedRowProps) {
   const [occurrences, setOccurrences] = useState<OccurrenceFeature[]>([]);
-  const [loadingOccurrences, setLoadingOccurrences] = useState(false);
-  const [loadingDetails, setLoadingDetails] = useState(!species);
-  const [details, setDetails] = useState<SpeciesDetails | null>(species);
+  const [loadingOccurrences, setLoadingOccurrences] = useState(true);
 
   const config = REGION_CONFIG[regionMode];
 
-  // Fetch species details if not provided
+  // Fetch occurrences immediately
   useEffect(() => {
-    if (!species && speciesKey) {
-      setLoadingDetails(true);
-      fetch(`/api/species/${speciesKey}`)
-        .then((res) => res.json())
-        .then((data) => setDetails(data))
-        .catch(console.error)
-        .finally(() => setLoadingDetails(false));
-    }
-  }, [species, speciesKey]);
-
-  // Fetch occurrences when map tab is selected
-  useEffect(() => {
-    if (activeTab === "map" && occurrences.length === 0 && !loadingOccurrences) {
-      setLoadingOccurrences(true);
-      fetch(`${config.occurrencesEndpoint}?speciesKey=${speciesKey}&limit=500`)
-        .then((res) => res.json())
-        .then((data) => setOccurrences(data.features || []))
-        .catch(console.error)
-        .finally(() => setLoadingOccurrences(false));
-    }
-  }, [activeTab, speciesKey, config.occurrencesEndpoint, occurrences.length, loadingOccurrences]);
-
-  const displaySpecies = details || species;
+    setLoadingOccurrences(true);
+    fetch(`${config.occurrencesEndpoint}?speciesKey=${speciesKey}&limit=500`)
+      .then((res) => res.json())
+      .then((data) => setOccurrences(data.features || []))
+      .catch(console.error)
+      .finally(() => setLoadingOccurrences(false));
+  }, [speciesKey, config.occurrencesEndpoint]);
 
   return (
     <tr>
       <td colSpan={colSpan} className="p-0">
-        <div className="bg-zinc-50 dark:bg-zinc-800/50 border-t border-b border-zinc-200 dark:border-zinc-700">
-          {/* Header with tabs and close */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActiveTab("details")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                  activeTab === "details"
-                    ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-700"
-                }`}
-              >
-                Details
-              </button>
-              <button
-                onClick={() => setActiveTab("map")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
-                  activeTab === "map"
-                    ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-600 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-700"
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                Map
-              </button>
-            </div>
-            <button onClick={onClose} className="text-zinc-400 hover:text-zinc-600 p-1">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="p-4">
-            {activeTab === "details" ? (
-              loadingDetails ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="text-zinc-400">Loading species details...</div>
+        <div className="bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700">
+          <div className="p-2">
+            {/* Map Only */}
+            <div className="h-[400px] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 relative">
+              {loadingOccurrences ? (
+                <div className="flex items-center justify-center h-full bg-zinc-100 dark:bg-zinc-800">
+                  <div className="text-zinc-400">Loading occurrences...</div>
                 </div>
-              ) : displaySpecies ? (
-                <div className="flex gap-6">
-                  {displaySpecies.imageUrl && (
-                    <img
-                      src={displaySpecies.imageUrl}
-                      alt=""
-                      className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
+              ) : mounted ? (
+                <MapContainer
+                  center={config.center}
+                  zoom={config.zoom}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  {config.bounds && (
+                    <Rectangle
+                      bounds={config.bounds}
+                      pathOptions={{ color: "#22c55e", weight: 2, fillOpacity: 0.05 }}
                     />
                   )}
-                  <div className="flex-1 min-w-0">
-                    <dl className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <dt className="text-zinc-500">Kingdom</dt>
-                        <dd className="font-medium text-zinc-900 dark:text-zinc-100">
-                          {displaySpecies.kingdom || "—"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-zinc-500">Family</dt>
-                        <dd className="font-medium text-zinc-900 dark:text-zinc-100">
-                          {displaySpecies.family || "—"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-zinc-500">Genus</dt>
-                        <dd className="font-medium text-zinc-900 dark:text-zinc-100">
-                          {displaySpecies.genus || "—"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-zinc-500">Occurrences</dt>
-                        <dd className="font-medium text-zinc-900 dark:text-zinc-100">
-                          {formatNumber(occurrenceCount)} {regionMode === "cambridge" ? "(Cambridge)" : "(Global)"}
-                        </dd>
-                      </div>
-                    </dl>
-                    <div className="mt-4">
-                      <a
-                        href={displaySpecies.gbifUrl || `https://www.gbif.org/species/${speciesKey}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700"
+                  {occurrences.map((feature, idx) => {
+                    const [lon, lat] = feature.geometry.coordinates;
+                    return (
+                      <CircleMarker
+                        key={feature.properties.gbifID || idx}
+                        center={[lat, lon]}
+                        radius={6}
+                        pathOptions={{
+                          color: "#3b82f6",
+                          fillColor: "#3b82f6",
+                          fillOpacity: 0.7,
+                          weight: 1,
+                        }}
                       >
-                        View on GBIF
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-zinc-400">Unable to load species details</div>
-              )
-            ) : (
-              /* Map Tab */
-              <div className="h-[300px] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 relative">
-                {loadingOccurrences ? (
-                  <div className="flex items-center justify-center h-full bg-zinc-100 dark:bg-zinc-800">
-                    <div className="text-zinc-400">Loading occurrences...</div>
-                  </div>
-                ) : mounted ? (
-                  <MapContainer
-                    center={config.center}
-                    zoom={config.zoom}
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    {config.bounds && (
-                      <Rectangle
-                        bounds={config.bounds}
-                        pathOptions={{ color: "#22c55e", weight: 2, fillOpacity: 0.05 }}
-                      />
-                    )}
-                    {occurrences.map((feature, idx) => {
-                      const [lon, lat] = feature.geometry.coordinates;
-                      return (
-                        <CircleMarker
-                          key={feature.properties.gbifID || idx}
-                          center={[lat, lon]}
-                          radius={6}
-                          pathOptions={{
-                            color: "#3b82f6",
-                            fillColor: "#3b82f6",
-                            fillOpacity: 0.7,
-                            weight: 1,
-                          }}
-                        >
-                          <Popup>
-                            <div className="text-sm">
-                              <div className="font-medium italic">{feature.properties.species}</div>
-                              {feature.properties.eventDate && (
-                                <div className="text-xs">{feature.properties.eventDate}</div>
-                              )}
-                              <div className="text-xs text-gray-500">
-                                {lat.toFixed(4)}, {lon.toFixed(4)}
-                              </div>
-                              <a
-                                href={`https://www.gbif.org/occurrence/${feature.properties.gbifID}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:text-blue-800 hover:underline mt-1 inline-block"
-                              >
-                                View on GBIF →
-                              </a>
+                        <Popup>
+                          <div className="text-sm">
+                            <div className="font-medium italic">{feature.properties.species}</div>
+                            {feature.properties.eventDate && (
+                              <div className="text-xs">{feature.properties.eventDate}</div>
+                            )}
+                            <div className="text-xs text-gray-500">
+                              {lat.toFixed(4)}, {lon.toFixed(4)}
                             </div>
-                          </Popup>
-                        </CircleMarker>
-                      );
-                    })}
-                  </MapContainer>
-                ) : null}
-                {!loadingOccurrences && occurrences.length > 0 && (
-                  <div className="absolute bottom-2 left-2 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs text-zinc-600 dark:text-zinc-300 shadow">
-                    {occurrences.length} occurrences shown
-                  </div>
-                )}
-              </div>
-            )}
+                            <a
+                              href={`https://www.gbif.org/occurrence/${feature.properties.gbifID}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:text-blue-800 hover:underline mt-1 inline-block"
+                            >
+                              View on GBIF →
+                            </a>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    );
+                  })}
+                </MapContainer>
+              ) : null}
+              {!loadingOccurrences && (
+                <div className="absolute bottom-2 left-2 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs text-zinc-600 dark:text-zinc-300 shadow">
+                  {occurrences.length} occurrences
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </td>
@@ -739,8 +620,8 @@ export default function Home() {
         </div>
 
         {/* Table */}
-        <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden mb-6">
-          <table className="w-full">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-x-auto mb-6">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-zinc-50 dark:bg-zinc-800">
               <tr>
                 {searchResults === null && (
@@ -760,12 +641,15 @@ export default function Home() {
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase w-32">
                   Occurrences
                 </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase w-16">
+                  GBIF
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
+                  <td colSpan={6} className="px-4 py-8 text-center text-zinc-500">
                     Loading...
                   </td>
                 </tr>
@@ -792,16 +676,26 @@ export default function Home() {
                       <td className="px-4 py-2 text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
                         {species.occurrenceCount ? formatNumber(species.occurrenceCount) : "—"}
                       </td>
+                      <td className="px-4 py-2 text-center">
+                        <a
+                          href={`https://www.gbif.org/species/${species.key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      </td>
                     </tr>
                     {selectedSpeciesKey === species.key && (
                       <ExpandedRow
-                        species={species}
                         speciesKey={species.key}
-                        occurrenceCount={species.occurrenceCount || 0}
                         regionMode={regionMode}
-                        onClose={() => setSelectedSpeciesKey(null)}
                         mounted={mounted}
-                        colSpan={4}
+                        colSpan={5}
                       />
                     )}
                   </React.Fragment>
@@ -840,16 +734,26 @@ export default function Home() {
                         <td className="px-4 py-2 text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
                           {formatNumber(record.occurrence_count)}
                         </td>
+                        <td className="px-4 py-2 text-center">
+                          <a
+                            href={`https://www.gbif.org/species/${record.species_key}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        </td>
                       </tr>
                       {selectedSpeciesKey === record.species_key && (
                         <ExpandedRow
-                          species={cached || null}
                           speciesKey={record.species_key}
-                          occurrenceCount={record.occurrence_count}
                           regionMode={regionMode}
-                          onClose={() => setSelectedSpeciesKey(null)}
                           mounted={mounted}
-                          colSpan={5}
+                          colSpan={6}
                         />
                       )}
                     </React.Fragment>
