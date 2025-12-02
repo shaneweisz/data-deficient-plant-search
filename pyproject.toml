@@ -5,17 +5,9 @@ description = "Identify candidate locations for collecting samples for data-defi
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "pandas>=2.2.0",
-    "pygbif>=0.6.6",
     "requests>=2.32.5",
-    "geotessera>=0.1.0",
     "scikit-learn>=1.5.0",
-    "geopandas>=1.0.0",
     "rasterio>=1.4.0",
     "numpy>=2.0.0",
-    "matplotlib>=3.9.0",
-    "joblib>=1.4.0",
     "tqdm>=4.66.0",
-    "jupyter>=1.0.0",
-    "ipywidgets>=8.1.0",
 ]
