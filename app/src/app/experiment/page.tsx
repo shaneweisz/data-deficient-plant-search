@@ -27,13 +27,15 @@ interface Point {
 }
 
 interface Experiment {
-  n: number;
+  n_positive: number;
+  n_negative: number;
   n_test_positive: number;
   n_test_negative: number;
   auc: number;
   mean_positive: number;
   mean_negative: number;
-  train: { lon: number; lat: number }[];
+  train_positive: { lon: number; lat: number }[];
+  train_negative: { lon: number; lat: number }[];
   test_positive: Point[];
   test_negative: Point[];
 }
@@ -51,7 +53,7 @@ const SPECIES_FILES = ["quercus_robur", "fraxinus_excelsior"];
 export default function ExperimentPage() {
   const [speciesData, setSpeciesData] = useState<Record<string, SpeciesData>>({});
   const [selectedSpecies, setSelectedSpecies] = useState<string>("quercus_robur");
-  const [selectedN, setSelectedN] = useState<number>(10);
+  const [selectedNPositive, setSelectedNPositive] = useState<number>(10);
   const [threshold, setThreshold] = useState<number>(0.5);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,15 +85,15 @@ export default function ExperimentPage() {
   }, []);
 
   const currentData = speciesData[selectedSpecies];
-  const currentExp = currentData?.experiments.find((e) => e.n === selectedN);
-  const availableN = currentData?.experiments.map((e) => e.n) || [];
+  const currentExp = currentData?.experiments.find((e) => e.n_positive === selectedNPositive);
+  const availableNPositive = currentData?.experiments.map((e) => e.n_positive) || [];
 
-  // Ensure selectedN is valid for current species
+  // Ensure selectedNPositive is valid for current species
   useEffect(() => {
-    if (availableN.length > 0 && !availableN.includes(selectedN)) {
-      setSelectedN(availableN[0]);
+    if (availableNPositive.length > 0 && !availableNPositive.includes(selectedNPositive)) {
+      setSelectedNPositive(availableNPositive[0]);
     }
-  }, [availableN, selectedN]);
+  }, [availableNPositive, selectedNPositive]);
 
   if (loading) {
     return (
@@ -158,15 +160,16 @@ export default function ExperimentPage() {
           {/* N selector */}
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-              Training samples (n)
+              Positive training samples
+              <span className="font-normal text-zinc-500 ml-1">(+ matching negatives)</span>
             </label>
             <div className="flex flex-wrap gap-2">
-              {availableN.map((n) => (
+              {availableNPositive.map((n) => (
                 <button
                   key={n}
-                  onClick={() => setSelectedN(n)}
+                  onClick={() => setSelectedNPositive(n)}
                   className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    selectedN === n
+                    selectedNPositive === n
                       ? "bg-green-600 text-white"
                       : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                   }`}
@@ -292,7 +295,8 @@ export default function ExperimentPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-zinc-200 dark:border-zinc-700">
-                  <th className="text-left py-2 px-3 text-zinc-500">n</th>
+                  <th className="text-left py-2 px-3 text-zinc-500">Train +</th>
+                  <th className="text-left py-2 px-3 text-zinc-500">Train −</th>
                   <th className="text-right py-2 px-3 text-green-600">AUC</th>
                   <th className="text-right py-2 px-3 text-zinc-500">Test +</th>
                   <th className="text-right py-2 px-3 text-zinc-500">Test −</th>
@@ -301,13 +305,14 @@ export default function ExperimentPage() {
               <tbody>
                 {currentData.experiments.map((exp) => (
                   <tr
-                    key={exp.n}
+                    key={exp.n_positive}
                     className={`border-b border-zinc-100 dark:border-zinc-800 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
-                      exp.n === selectedN ? "bg-zinc-100 dark:bg-zinc-800" : ""
+                      exp.n_positive === selectedNPositive ? "bg-zinc-100 dark:bg-zinc-800" : ""
                     }`}
-                    onClick={() => setSelectedN(exp.n)}
+                    onClick={() => setSelectedNPositive(exp.n_positive)}
                   >
-                    <td className="py-2 px-3 font-medium">{exp.n}</td>
+                    <td className="py-2 px-3 font-medium">{exp.n_positive}</td>
+                    <td className="py-2 px-3 font-medium">{exp.n_negative}</td>
                     <td className={`py-2 px-3 text-right font-medium ${exp.auc >= 0.7 ? "text-green-600" : exp.auc >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
                       {(exp.auc * 100).toFixed(1)}%
                     </td>
@@ -326,7 +331,11 @@ export default function ExperimentPage() {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-yellow-500 border-2 border-yellow-700" />
-                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train ({currentExp.train.length})</span>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train + ({currentExp.train_positive.length})</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-700" />
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train − ({currentExp.train_negative.length})</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-700" />
@@ -457,10 +466,31 @@ export default function ExperimentPage() {
                     </CircleMarker>
                   );
                 })}
-                {/* Training points (on top) */}
-                {currentExp.train.map((pt, idx) => (
+                {/* Training negative points - purple */}
+                {currentExp.train_negative.map((pt, idx) => (
                   <CircleMarker
-                    key={`train-${idx}`}
+                    key={`train-neg-${idx}`}
+                    center={[pt.lat, pt.lon]}
+                    radius={7}
+                    pathOptions={{
+                      color: "#7e22ce",
+                      fillColor: "#a855f7",
+                      fillOpacity: 0.9,
+                      weight: 2,
+                    }}
+                  >
+                    <Popup>
+                      <div className="text-sm">
+                        <div className="font-medium text-purple-600">Training Negative</div>
+                        <div className="text-xs text-zinc-500">Background sample</div>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                ))}
+                {/* Training positive points (on top) - yellow */}
+                {currentExp.train_positive.map((pt, idx) => (
+                  <CircleMarker
+                    key={`train-pos-${idx}`}
                     center={[pt.lat, pt.lon]}
                     radius={7}
                     pathOptions={{
@@ -472,7 +502,8 @@ export default function ExperimentPage() {
                   >
                     <Popup>
                       <div className="text-sm">
-                        <div className="font-medium text-yellow-600">Training Point</div>
+                        <div className="font-medium text-yellow-600">Training Positive</div>
+                        <div className="text-xs text-zinc-500">Known occurrence</div>
                       </div>
                     </Popup>
                   </CircleMarker>
