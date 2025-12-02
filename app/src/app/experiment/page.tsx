@@ -107,6 +107,7 @@ export default function ExperimentPage() {
   // Location-based prediction state
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [localPredictions, setLocalPredictions] = useState<LocalPredictionResult | null>(null);
+  const [showHeatmap, setShowHeatmap] = useState(true);
   const [localLoading, setLocalLoading] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -775,19 +776,35 @@ export default function ExperimentPage() {
               {userLocation && (
                 <div className="rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
                   <div className="p-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
-                    <div className="flex flex-wrap items-center gap-3 text-xs">
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-cyan-500 border border-cyan-700" />
-                        <span className="text-zinc-600 dark:text-zinc-400">High prob</span>
+                    <div className="flex flex-wrap items-center justify-between">
+                      <div className="flex flex-wrap items-center gap-3 text-xs">
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded bg-red-500" />
+                          <span className="text-zinc-600 dark:text-zinc-400">High</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded bg-yellow-500" />
+                          <span className="text-zinc-600 dark:text-zinc-400">Medium</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded bg-blue-500" />
+                          <span className="text-zinc-600 dark:text-zinc-400">Low</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-full bg-white border-2 border-zinc-800" />
+                          <span className="text-zinc-600 dark:text-zinc-400">You</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-zinc-400 border border-zinc-600" />
-                        <span className="text-zinc-600 dark:text-zinc-400">Low prob</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-red-500 border-2 border-red-700" />
-                        <span className="text-zinc-600 dark:text-zinc-400">Your location</span>
-                      </div>
+                      <button
+                        onClick={() => setShowHeatmap(!showHeatmap)}
+                        className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                          showHeatmap
+                            ? "bg-green-600 text-white"
+                            : "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300"
+                        }`}
+                      >
+                        {showHeatmap ? "Heatmap On" : "Heatmap Off"}
+                      </button>
                     </div>
                   </div>
                   <div className="h-[400px]">
@@ -801,43 +818,66 @@ export default function ExperimentPage() {
                           attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
                           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                         />
-                        {/* Local predictions */}
-                        {localPredictions.predictions.map((pt, idx) => (
-                          <CircleMarker
-                            key={`local-${idx}`}
-                            center={[pt.lat, pt.lon]}
-                            radius={8}
-                            pathOptions={{
-                              color: pt.score >= threshold ? "#0891b2" : "#64748b",
-                              fillColor: pt.score >= threshold ? "#06b6d4" : "#94a3b8",
-                              fillOpacity: 0.8,
-                              weight: 2,
-                            }}
-                          >
-                            <Popup>
-                              <div className="text-sm">
-                                <div className={`font-medium ${pt.score >= threshold ? "text-cyan-600" : "text-zinc-600"}`}>
-                                  Prediction
+                        {/* Heatmap rectangles */}
+                        {showHeatmap && localPredictions.predictions.map((pt, idx) => {
+                          // Color gradient from blue (0) -> yellow (0.5) -> red (1)
+                          const score = pt.score;
+                          let r, g, b;
+                          if (score < 0.5) {
+                            // Blue to Yellow
+                            const t = score * 2;
+                            r = Math.round(255 * t);
+                            g = Math.round(255 * t);
+                            b = Math.round(255 * (1 - t));
+                          } else {
+                            // Yellow to Red
+                            const t = (score - 0.5) * 2;
+                            r = 255;
+                            g = Math.round(255 * (1 - t));
+                            b = 0;
+                          }
+                          const color = `rgb(${r},${g},${b})`;
+
+                          // Each pixel is ~10m, convert to degrees
+                          const pixelSize = 0.0001; // ~10m in degrees
+                          const bounds: [[number, number], [number, number]] = [
+                            [pt.lat - pixelSize / 2, pt.lon - pixelSize / 2],
+                            [pt.lat + pixelSize / 2, pt.lon + pixelSize / 2],
+                          ];
+
+                          return (
+                            <Rectangle
+                              key={`heatmap-${idx}`}
+                              bounds={bounds}
+                              pathOptions={{
+                                color: color,
+                                fillColor: color,
+                                fillOpacity: 0.7,
+                                weight: 0,
+                              }}
+                            >
+                              <Popup>
+                                <div className="text-sm">
+                                  <div className="font-medium">Score: {pt.score.toFixed(3)}</div>
                                 </div>
-                                <div>Score: {pt.score.toFixed(3)}</div>
-                              </div>
-                            </Popup>
-                          </CircleMarker>
-                        ))}
+                              </Popup>
+                            </Rectangle>
+                          );
+                        })}
                         {/* User location marker */}
                         <CircleMarker
                           center={[userLocation.lat, userLocation.lon]}
-                          radius={10}
+                          radius={8}
                           pathOptions={{
-                            color: "#dc2626",
-                            fillColor: "#ef4444",
+                            color: "#1f2937",
+                            fillColor: "#ffffff",
                             fillOpacity: 1,
                             weight: 3,
                           }}
                         >
                           <Popup>
                             <div className="text-sm">
-                              <div className="font-medium text-red-600">Your Location</div>
+                              <div className="font-medium">Your Location</div>
                             </div>
                           </Popup>
                         </CircleMarker>
