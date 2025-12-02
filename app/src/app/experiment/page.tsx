@@ -26,18 +26,26 @@ interface Point {
   score?: number;
 }
 
-interface Experiment {
-  n_positive: number;
-  n_negative: number;
-  n_test_positive: number;
-  n_test_negative: number;
+interface Trial {
+  seed: number;
   auc: number;
   mean_positive: number;
   mean_negative: number;
+  n_test_positive: number;
+  n_test_negative: number;
   train_positive: { lon: number; lat: number }[];
   train_negative: { lon: number; lat: number }[];
   test_positive: Point[];
   test_negative: Point[];
+}
+
+interface Experiment {
+  n_positive: number;
+  n_negative: number;
+  n_trials: number;
+  auc_mean: number;
+  auc_std: number;
+  trials: Trial[];
 }
 
 interface SpeciesData {
@@ -45,6 +53,7 @@ interface SpeciesData {
   species_key: number;
   region: string;
   n_occurrences: number;
+  n_trials: number;
   experiments: Experiment[];
 }
 
@@ -54,6 +63,7 @@ export default function ExperimentPage() {
   const [speciesData, setSpeciesData] = useState<Record<string, SpeciesData>>({});
   const [selectedSpecies, setSelectedSpecies] = useState<string>("quercus_robur");
   const [selectedNPositive, setSelectedNPositive] = useState<number>(10);
+  const [selectedTrialIdx, setSelectedTrialIdx] = useState<number>(0);
   const [threshold, setThreshold] = useState<number>(0.5);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -87,6 +97,7 @@ export default function ExperimentPage() {
   const currentData = speciesData[selectedSpecies];
   const currentExp = currentData?.experiments.find((e) => e.n_positive === selectedNPositive);
   const availableNPositive = currentData?.experiments.map((e) => e.n_positive) || [];
+  const currentTrial = currentExp?.trials[selectedTrialIdx];
 
   // Ensure selectedNPositive is valid for current species
   useEffect(() => {
@@ -94,6 +105,11 @@ export default function ExperimentPage() {
       setSelectedNPositive(availableNPositive[0]);
     }
   }, [availableNPositive, selectedNPositive]);
+
+  // Reset trial index when n changes
+  useEffect(() => {
+    setSelectedTrialIdx(0);
+  }, [selectedNPositive]);
 
   if (loading) {
     return (
@@ -103,7 +119,7 @@ export default function ExperimentPage() {
     );
   }
 
-  if (!currentData || !currentExp) {
+  if (!currentData || !currentExp || !currentTrial) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
         <div className="text-zinc-500">No experiment data found</div>
@@ -114,10 +130,10 @@ export default function ExperimentPage() {
   // Compute confusion matrix based on threshold
   const getScore = (pt: Point) => pt.score ?? 0;
 
-  const truePositives = currentExp.test_positive.filter(pt => getScore(pt) >= threshold);
-  const falseNegatives = currentExp.test_positive.filter(pt => getScore(pt) < threshold);
-  const trueNegatives = currentExp.test_negative.filter(pt => getScore(pt) < threshold);
-  const falsePositives = currentExp.test_negative.filter(pt => getScore(pt) >= threshold);
+  const truePositives = currentTrial.test_positive.filter(pt => getScore(pt) >= threshold);
+  const falseNegatives = currentTrial.test_positive.filter(pt => getScore(pt) < threshold);
+  const trueNegatives = currentTrial.test_negative.filter(pt => getScore(pt) < threshold);
+  const falsePositives = currentTrial.test_negative.filter(pt => getScore(pt) >= threshold);
 
   const tp = truePositives.length;
   const fn = falseNegatives.length;
@@ -134,11 +150,12 @@ export default function ExperimentPage() {
         <div className="mb-6">
           <p className="text-zinc-600 dark:text-zinc-400">
             Validating classifier performance on held-out occurrences vs random background
+            <span className="ml-1 text-zinc-500">({currentData.n_trials} trials per setting)</span>
           </p>
         </div>
 
         {/* Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Species selector */}
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
@@ -179,25 +196,57 @@ export default function ExperimentPage() {
               ))}
             </div>
           </div>
+
+          {/* Trial selector */}
+          <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              Trial
+              <span className="font-normal text-zinc-500 ml-1">(seed: {currentTrial.seed})</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {currentExp.trials.map((trial, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedTrialIdx(idx)}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    selectedTrialIdx === idx
+                      ? "bg-blue-600 text-white"
+                      : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 text-center">
-            <div className={`text-3xl font-bold ${currentExp.auc >= 0.7 ? "text-green-600" : currentExp.auc >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
-              {(currentExp.auc * 100).toFixed(1)}%
+            <div className={`text-2xl font-bold ${currentExp.auc_mean >= 0.7 ? "text-green-600" : currentExp.auc_mean >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
+              {(currentExp.auc_mean * 100).toFixed(1)}%
+              <span className="text-sm font-normal text-zinc-500 ml-1">
+                ± {(currentExp.auc_std * 100).toFixed(1)}
+              </span>
             </div>
-            <div className="text-sm text-zinc-500">AUC</div>
+            <div className="text-sm text-zinc-500">Mean AUC</div>
           </div>
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 text-center">
-            <div className="text-3xl font-bold text-green-600">
-              {currentExp.mean_positive.toFixed(3)}
+            <div className={`text-2xl font-bold ${currentTrial.auc >= 0.7 ? "text-green-600" : currentTrial.auc >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
+              {(currentTrial.auc * 100).toFixed(1)}%
+            </div>
+            <div className="text-sm text-zinc-500">This Trial AUC</div>
+          </div>
+          <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {currentTrial.mean_positive.toFixed(3)}
             </div>
             <div className="text-sm text-zinc-500">Mean Positive Score</div>
           </div>
           <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 text-center">
-            <div className="text-3xl font-bold text-red-600">
-              {currentExp.mean_negative.toFixed(3)}
+            <div className="text-2xl font-bold text-red-600">
+              {currentTrial.mean_negative.toFixed(3)}
             </div>
             <div className="text-sm text-zinc-500">Mean Negative Score</div>
           </div>
@@ -297,9 +346,9 @@ export default function ExperimentPage() {
                 <tr className="border-b border-zinc-200 dark:border-zinc-700">
                   <th className="text-left py-2 px-3 text-zinc-500">Train +</th>
                   <th className="text-left py-2 px-3 text-zinc-500">Train −</th>
-                  <th className="text-right py-2 px-3 text-green-600">AUC</th>
-                  <th className="text-right py-2 px-3 text-zinc-500">Test +</th>
-                  <th className="text-right py-2 px-3 text-zinc-500">Test −</th>
+                  <th className="text-right py-2 px-3 text-green-600">Mean AUC</th>
+                  <th className="text-right py-2 px-3 text-zinc-500">Std</th>
+                  <th className="text-right py-2 px-3 text-zinc-500">Trials</th>
                 </tr>
               </thead>
               <tbody>
@@ -313,11 +362,13 @@ export default function ExperimentPage() {
                   >
                     <td className="py-2 px-3 font-medium">{exp.n_positive}</td>
                     <td className="py-2 px-3 font-medium">{exp.n_negative}</td>
-                    <td className={`py-2 px-3 text-right font-medium ${exp.auc >= 0.7 ? "text-green-600" : exp.auc >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
-                      {(exp.auc * 100).toFixed(1)}%
+                    <td className={`py-2 px-3 text-right font-medium ${exp.auc_mean >= 0.7 ? "text-green-600" : exp.auc_mean >= 0.5 ? "text-yellow-600" : "text-red-600"}`}>
+                      {(exp.auc_mean * 100).toFixed(1)}%
                     </td>
-                    <td className="py-2 px-3 text-right text-zinc-500">{exp.n_test_positive}</td>
-                    <td className="py-2 px-3 text-right text-zinc-500">{exp.n_test_negative}</td>
+                    <td className="py-2 px-3 text-right text-zinc-500">
+                      ±{(exp.auc_std * 100).toFixed(1)}%
+                    </td>
+                    <td className="py-2 px-3 text-right text-zinc-500">{exp.n_trials}</td>
                   </tr>
                 ))}
               </tbody>
@@ -331,11 +382,11 @@ export default function ExperimentPage() {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-yellow-500 border-2 border-yellow-700" />
-                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train + ({currentExp.train_positive.length})</span>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train + ({currentTrial.train_positive.length})</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-purple-500 border-2 border-purple-700" />
-                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train − ({currentExp.train_negative.length})</span>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Train − ({currentTrial.train_negative.length})</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-700" />
@@ -467,7 +518,7 @@ export default function ExperimentPage() {
                   );
                 })}
                 {/* Training negative points - purple */}
-                {currentExp.train_negative.map((pt, idx) => (
+                {currentTrial.train_negative.map((pt, idx) => (
                   <CircleMarker
                     key={`train-neg-${idx}`}
                     center={[pt.lat, pt.lon]}
@@ -488,7 +539,7 @@ export default function ExperimentPage() {
                   </CircleMarker>
                 ))}
                 {/* Training positive points (on top) - yellow */}
-                {currentExp.train_positive.map((pt, idx) => (
+                {currentTrial.train_positive.map((pt, idx) => (
                   <CircleMarker
                     key={`train-pos-${idx}`}
                     center={[pt.lat, pt.lon]}

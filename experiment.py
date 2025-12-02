@@ -3,6 +3,7 @@
 Experiment: Validate classifier approach for habitat prediction.
 
 Tests whether held-out occurrences score higher than random background points.
+Runs multiple trials per n value to reduce variance from random sampling.
 """
 
 import json
@@ -26,7 +27,8 @@ OUTPUT_DIR = PROJECT_ROOT / "output" / "experiments"
 SPECIES_LIST = ["Quercus robur", "Fraxinus excelsior"]  # Oak, Ash
 REGION = "cambridge"
 N_POSITIVE_VALUES = [1, 2, 5, 10, 20, 50, 100]  # Positive training samples (matched by negatives)
-SEED = 42
+N_TRIALS = 5  # Number of random trials per n value
+BASE_SEED = 42
 
 
 def compute_classifier(
@@ -87,8 +89,64 @@ def compute_auc(pos_scores: np.ndarray, neg_scores: np.ndarray) -> float:
     return n_correct / n_comparisons
 
 
-def run_species_experiment(species_name: str, mosaic: EmbeddingMosaic, rng: np.random.Generator):
-    """Run experiment for a single species."""
+def run_single_trial(
+    n_pos: int,
+    all_occ_emb: np.ndarray,
+    valid_coords: list[tuple[float, float]],
+    mosaic: EmbeddingMosaic,
+    rng: np.random.Generator,
+) -> dict:
+    """Run a single trial for a given n_positive value."""
+    n_total = len(valid_coords)
+
+    # Shuffle occurrences for this trial
+    indices = rng.permutation(n_total)
+    shuffled_emb = all_occ_emb[indices]
+    shuffled_coords = [valid_coords[i] for i in indices]
+
+    # Split occurrences
+    train_emb = shuffled_emb[:n_pos]
+    train_coords = shuffled_coords[:n_pos]
+    test_pos_emb = shuffled_emb[n_pos:]
+    test_pos_coords = shuffled_coords[n_pos:]
+    n_test = len(test_pos_coords)
+
+    # Sample background for training classifier (match positive training size)
+    train_neg_emb, train_neg_coords = sample_background_points(
+        mosaic, n_pos, shuffled_coords, rng
+    )
+
+    # Sample background for testing (match test size)
+    test_neg_emb, test_neg_coords = sample_background_points(
+        mosaic, n_test, shuffled_coords + train_neg_coords, rng
+    )
+
+    # Train classifier and score
+    pos_scores = compute_classifier(train_emb, train_neg_emb, test_pos_emb)
+    neg_scores = compute_classifier(train_emb, train_neg_emb, test_neg_emb)
+    auc = compute_auc(pos_scores, neg_scores)
+
+    return {
+        "auc": auc,
+        "mean_positive": float(pos_scores.mean()),
+        "mean_negative": float(neg_scores.mean()),
+        "n_test_positive": n_test,
+        "n_test_negative": len(test_neg_coords),
+        "train_positive": [{"lon": lon, "lat": lat} for lon, lat in train_coords],
+        "train_negative": [{"lon": lon, "lat": lat} for lon, lat in train_neg_coords],
+        "test_positive": [
+            {"lon": lon, "lat": lat, "score": float(s)}
+            for (lon, lat), s in zip(test_pos_coords, pos_scores)
+        ],
+        "test_negative": [
+            {"lon": lon, "lat": lat, "score": float(s)}
+            for (lon, lat), s in zip(test_neg_coords, neg_scores)
+        ],
+    }
+
+
+def run_species_experiment(species_name: str, mosaic: EmbeddingMosaic):
+    """Run experiment for a single species with multiple trials per n."""
     logger.info(f"\n{'='*60}")
     logger.info(f"Species: {species_name}")
     logger.info("=" * 60)
@@ -106,63 +164,41 @@ def run_species_experiment(species_name: str, mosaic: EmbeddingMosaic, rng: np.r
         logger.info("Not enough occurrences, skipping")
         return None
 
-    # Shuffle
-    indices = rng.permutation(n_total)
-    all_occ_emb = all_occ_emb[indices]
-    valid_coords = [valid_coords[i] for i in indices]
-
     experiments = []
 
     for n_pos in N_POSITIVE_VALUES:
         if n_pos >= n_total - 10:  # Need at least 10 test samples
             continue
 
-        logger.info(f"\nn_positive = {n_pos} (+ {n_pos} negative = {n_pos * 2} total training samples)")
+        logger.info(f"\nn_positive = {n_pos} (+ {n_pos} negative = {n_pos * 2} total training)")
 
-        # Split occurrences
-        train_emb = all_occ_emb[:n_pos]
-        train_coords = valid_coords[:n_pos]
-        test_pos_emb = all_occ_emb[n_pos:]
-        test_pos_coords = valid_coords[n_pos:]
-        n_test = len(test_pos_coords)
+        trials = []
+        aucs = []
 
-        # Sample background for training classifier (match positive training size)
-        train_neg_emb, train_neg_coords = sample_background_points(
-            mosaic, n_pos, valid_coords, rng
-        )
+        for trial_idx in range(N_TRIALS):
+            # Different seed for each trial
+            trial_seed = BASE_SEED + trial_idx
+            rng = np.random.default_rng(trial_seed)
 
-        # Sample background for testing (match test size)
-        test_neg_emb, test_neg_coords = sample_background_points(
-            mosaic, n_test, valid_coords + train_neg_coords, rng
-        )
+            trial_result = run_single_trial(
+                n_pos, all_occ_emb, valid_coords, mosaic, rng
+            )
+            trial_result["seed"] = trial_seed
+            trials.append(trial_result)
+            aucs.append(trial_result["auc"])
 
-        # Train classifier and score
-        pos_scores = compute_classifier(train_emb, train_neg_emb, test_pos_emb)
-        neg_scores = compute_classifier(train_emb, train_neg_emb, test_neg_emb)
-        auc = compute_auc(pos_scores, neg_scores)
+        auc_mean = float(np.mean(aucs))
+        auc_std = float(np.std(aucs))
 
-        logger.info(f"  AUC: {auc:.3f}")
-        logger.info(f"  Mean positive score: {pos_scores.mean():.3f}")
-        logger.info(f"  Mean negative score: {neg_scores.mean():.3f}")
+        logger.info(f"  AUC: {auc_mean:.3f} +/- {auc_std:.3f} (n={N_TRIALS} trials)")
 
         exp_data = {
             "n_positive": n_pos,
-            "n_negative": n_pos,  # Always matches n_positive
-            "n_test_positive": n_test,
-            "n_test_negative": len(test_neg_coords),
-            "auc": auc,
-            "mean_positive": float(pos_scores.mean()),
-            "mean_negative": float(neg_scores.mean()),
-            "train_positive": [{"lon": lon, "lat": lat} for lon, lat in train_coords],
-            "train_negative": [{"lon": lon, "lat": lat} for lon, lat in train_neg_coords],
-            "test_positive": [
-                {"lon": lon, "lat": lat, "score": float(s)}
-                for (lon, lat), s in zip(test_pos_coords, pos_scores)
-            ],
-            "test_negative": [
-                {"lon": lon, "lat": lat, "score": float(s)}
-                for (lon, lat), s in zip(test_neg_coords, neg_scores)
-            ],
+            "n_negative": n_pos,
+            "n_trials": N_TRIALS,
+            "auc_mean": auc_mean,
+            "auc_std": auc_std,
+            "trials": trials,
         }
         experiments.append(exp_data)
 
@@ -171,6 +207,7 @@ def run_species_experiment(species_name: str, mosaic: EmbeddingMosaic, rng: np.r
         "species_key": species_info["taxon_key"],
         "region": REGION,
         "n_occurrences": n_total,
+        "n_trials": N_TRIALS,
         "experiments": experiments,
     }
 
@@ -179,9 +216,9 @@ def run_all_experiments():
     """Run experiments for all species."""
     logger.info("=" * 60)
     logger.info("Classifier Validation Experiment")
+    logger.info(f"({N_TRIALS} trials per n value)")
     logger.info("=" * 60)
 
-    rng = np.random.default_rng(SEED)
     bbox = REGIONS[REGION]["bbox"]
 
     # Load mosaic once
@@ -195,13 +232,14 @@ def run_all_experiments():
     # Summary for all species
     summary = {
         "region": REGION,
-        "seed": SEED,
+        "base_seed": BASE_SEED,
+        "n_trials": N_TRIALS,
         "n_positive_values": N_POSITIVE_VALUES,
         "species": [],
     }
 
     for species in SPECIES_LIST:
-        result = run_species_experiment(species, mosaic, rng)
+        result = run_species_experiment(species, mosaic)
 
         if result:
             # Save per-species (full data with coordinates)
@@ -216,7 +254,11 @@ def run_all_experiments():
                 "species": species,
                 "n_occurrences": result["n_occurrences"],
                 "results": [
-                    {"n_positive": exp["n_positive"], "auc": exp["auc"]}
+                    {
+                        "n_positive": exp["n_positive"],
+                        "auc_mean": exp["auc_mean"],
+                        "auc_std": exp["auc_std"],
+                    }
                     for exp in result["experiments"]
                 ],
             }
@@ -232,11 +274,14 @@ def run_all_experiments():
     logger.info("\n" + "=" * 60)
     logger.info("SUMMARY")
     logger.info("=" * 60)
-    logger.info(f"{'Species':<25} {'n_pos':>6} {'n_neg':>6} {'AUC':>10}")
-    logger.info("-" * 52)
+    logger.info(f"{'Species':<25} {'n_pos':>6} {'AUC mean':>10} {'AUC std':>10}")
+    logger.info("-" * 56)
     for sp in summary["species"]:
         for r in sp["results"]:
-            logger.info(f"{sp['species']:<25} {r['n_positive']:>6} {r['n_positive']:>6} {r['auc']:>10.3f}")
+            logger.info(
+                f"{sp['species']:<25} {r['n_positive']:>6} "
+                f"{r['auc_mean']:>10.3f} {r['auc_std']:>10.3f}"
+            )
         logger.info("")
 
     logger.info("=" * 60)
