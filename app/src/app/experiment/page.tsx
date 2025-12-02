@@ -58,6 +58,10 @@ interface SpeciesData {
   experiments: Experiment[];
 }
 
+interface SpeciesNames {
+  [key: string]: string | undefined; // species_key -> vernacular name
+}
+
 const SPECIES_FILES = [
   "quercus_robur",
   "fraxinus_excelsior",
@@ -70,6 +74,7 @@ const SPECIES_FILES = [
 
 export default function ExperimentPage() {
   const [speciesData, setSpeciesData] = useState<Record<string, SpeciesData>>({});
+  const [speciesNames, setSpeciesNames] = useState<SpeciesNames>({});
   const [selectedSpecies, setSelectedSpecies] = useState<string>("quercus_robur");
   const [selectedNPositive, setSelectedNPositive] = useState<number>(10);
   const [selectedTrialIdx, setSelectedTrialIdx] = useState<number>(0);
@@ -100,6 +105,29 @@ export default function ExperimentPage() {
       });
       setSpeciesData(data);
       setLoading(false);
+
+      // Fetch vernacular names for all species
+      const speciesKeys = Object.values(data).map((d) => d.species_key);
+      Promise.all(
+        speciesKeys.map(async (key) => {
+          try {
+            const res = await fetch(`/api/species/${key}`);
+            if (res.ok) {
+              const info = await res.json();
+              return [key.toString(), info.vernacularName] as [string, string | undefined];
+            }
+          } catch (e) {
+            console.error(`Failed to fetch species ${key}:`, e);
+          }
+          return [key.toString(), undefined] as [string, string | undefined];
+        })
+      ).then((nameResults) => {
+        const names: SpeciesNames = {};
+        nameResults.forEach(([key, name]) => {
+          names[key] = name;
+        });
+        setSpeciesNames(names);
+      });
     });
   }, []);
 
@@ -185,11 +213,15 @@ export default function ExperimentPage() {
               onChange={(e) => setSelectedSpecies(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
             >
-              {Object.entries(speciesData).map(([slug, data]) => (
-                <option key={slug} value={slug}>
-                  {data.species} ({data.n_occurrences} occurrences)
-                </option>
-              ))}
+              {Object.entries(speciesData).map(([slug, data]) => {
+                const vernacularName = speciesNames[data.species_key.toString()];
+                return (
+                  <option key={slug} value={slug}>
+                    {data.species}
+                    {vernacularName ? ` (${vernacularName})` : ""} - {data.n_occurrences} occurrences
+                  </option>
+                );
+              })}
             </select>
           </div>
 
