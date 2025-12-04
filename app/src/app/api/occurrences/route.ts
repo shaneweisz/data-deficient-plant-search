@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const speciesKey = searchParams.get("speciesKey");
   const species = searchParams.get("species");
+  const country = searchParams.get("country");
   const limit = parseInt(searchParams.get("limit") || "500");
 
   // If species name is provided, try to load from local file first
@@ -55,6 +56,11 @@ export async function GET(request: NextRequest) {
       hasGeospatialIssue: "false",
       limit: limit.toString(),
     });
+
+    // Add country filter if provided
+    if (country) {
+      params.set("country", country.toUpperCase());
+    }
 
     const response = await fetch(
       `https://api.gbif.org/v1/occurrence/search?${params}`

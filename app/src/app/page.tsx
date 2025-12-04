@@ -20,10 +20,6 @@ const Popup = dynamic(
   () => import("react-leaflet").then((mod) => mod.Popup),
   { ssr: false }
 );
-const Rectangle = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Rectangle),
-  { ssr: false }
-);
 
 // Locate button component that uses useMap hook
 const LocateControl = dynamic(
@@ -105,7 +101,13 @@ interface ApiResponse {
 }
 
 type FilterPreset = "all" | "dataDeficient" | "veryRare" | "singletons";
-type RegionMode = "global" | "cambridge";
+type RegionMode = "global" | "country";
+
+// Dynamically import WorldMap component
+const WorldMap = dynamic(
+  () => import("../components/WorldMap"),
+  { ssr: false }
+);
 
 // ============================================================================
 // Constants
@@ -116,34 +118,6 @@ const FILTER_PRESETS: Record<FilterPreset, { minCount: number; maxCount: number;
   dataDeficient: { minCount: 0, maxCount: 100, label: "≤ 100" },
   veryRare: { minCount: 0, maxCount: 10, label: "≤ 10" },
   singletons: { minCount: 1, maxCount: 1, label: "= 1" },
-};
-
-const REGION_CONFIG: Record<RegionMode, {
-  label: string;
-  description: string;
-  apiEndpoint: string;
-  occurrencesEndpoint: string;
-  center: [number, number];
-  zoom: number;
-  bounds?: [[number, number], [number, number]];
-}> = {
-  global: {
-    label: "Global",
-    description: "Worldwide GBIF occurrence data",
-    apiEndpoint: "/api/species",
-    occurrencesEndpoint: "/api/occurrences",
-    center: [20, 0],
-    zoom: 2,
-  },
-  cambridge: {
-    label: "Cambridge",
-    description: "Cambridge test region",
-    apiEndpoint: "/api/cambridge/species",
-    occurrencesEndpoint: "/api/cambridge/occurrences",
-    center: [52.205, 0.1235],
-    zoom: 11,
-    bounds: [[52.092, -0.003], [52.318, 0.250]],
-  },
 };
 
 // Shared search endpoint for all regions
@@ -245,12 +219,13 @@ interface ExpandedRowProps {
   speciesKey: number;
   speciesName?: string;
   regionMode: RegionMode;
+  countryCode?: string | null;
   mounted: boolean;
   colSpan: number;
   hasCandidates?: boolean;
 }
 
-function ExpandedRow({ speciesKey, speciesName, regionMode, mounted, colSpan, hasCandidates }: ExpandedRowProps) {
+function ExpandedRow({ speciesKey, speciesName, regionMode, countryCode, mounted, colSpan, hasCandidates }: ExpandedRowProps) {
   const [occurrences, setOccurrences] = useState<OccurrenceFeature[]>([]);
   const [candidates, setCandidates] = useState<CandidateFeature[]>([]);
   const [loadingOccurrences, setLoadingOccurrences] = useState(true);
@@ -258,17 +233,25 @@ function ExpandedRow({ speciesKey, speciesName, regionMode, mounted, colSpan, ha
   const [showCandidates, setShowCandidates] = useState(true);
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.7);
 
-  const config = REGION_CONFIG[regionMode];
+  // Build occurrences endpoint - add country filter if in country mode
+  const occurrencesEndpoint = "/api/occurrences";
 
   // Fetch occurrences immediately
   useEffect(() => {
     setLoadingOccurrences(true);
-    fetch(`${config.occurrencesEndpoint}?speciesKey=${speciesKey}&limit=500`)
+    const params = new URLSearchParams({
+      speciesKey: speciesKey.toString(),
+      limit: "500",
+    });
+    if (regionMode === "country" && countryCode) {
+      params.set("country", countryCode);
+    }
+    fetch(`${occurrencesEndpoint}?${params}`)
       .then((res) => res.json())
       .then((data) => setOccurrences(data.features || []))
       .catch(console.error)
       .finally(() => setLoadingOccurrences(false));
-  }, [speciesKey, config.occurrencesEndpoint]);
+  }, [speciesKey, occurrencesEndpoint, regionMode, countryCode]);
 
   // Fetch ALL candidates (no threshold) for heatmap
   useEffect(() => {
@@ -343,8 +326,8 @@ function ExpandedRow({ speciesKey, speciesName, regionMode, mounted, colSpan, ha
                 </div>
               ) : mounted ? (
                 <MapContainer
-                  center={config.center}
-                  zoom={config.zoom}
+                  center={[20, 0]}
+                  zoom={2}
                   style={{ height: "100%", width: "100%" }}
                 >
                   <TileLayer
@@ -352,12 +335,6 @@ function ExpandedRow({ speciesKey, speciesName, regionMode, mounted, colSpan, ha
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
                   <LocateControl />
-                  {config.bounds && (
-                    <Rectangle
-                      bounds={config.bounds}
-                      pathOptions={{ color: "#22c55e", weight: 2, fillOpacity: 0.05 }}
-                    />
-                  )}
                   {/* Render candidates as heatmap (sorted low-to-high so high prob on top) */}
                   {showCandidates && sortedCandidates.map((feature, idx) => {
                     const [lon, lat] = feature.geometry.coordinates;
@@ -449,6 +426,8 @@ function ExpandedRow({ speciesKey, speciesName, regionMode, mounted, colSpan, ha
 export default function Home() {
   // Region mode
   const [regionMode, setRegionMode] = useState<RegionMode>("global");
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCountryName, setSelectedCountryName] = useState<string | null>(null);
 
   // Data state
   const [data, setData] = useState<SpeciesRecord[]>([]);
@@ -469,14 +448,16 @@ export default function Home() {
 
   // Modal
   const [selectedSpeciesKey, setSelectedSpeciesKey] = useState<number | null>(null);
-  const [selectedOccurrenceCount, setSelectedOccurrenceCount] = useState<number>(0);
   const [mounted, setMounted] = useState(false);
 
   // Candidates
   const [availableCandidates, setAvailableCandidates] = useState<string[]>([]);
   const [showOnlyWithCandidates, setShowOnlyWithCandidates] = useState(false);
 
-  const config = REGION_CONFIG[regionMode];
+  // Compute API endpoint based on mode
+  const apiEndpoint = regionMode === "country" && selectedCountry
+    ? `/api/country/${selectedCountry}/species`
+    : "/api/species";
 
   useEffect(() => {
     setMounted(true);
@@ -496,6 +477,14 @@ export default function Home() {
 
   // Fetch data based on region mode
   const fetchData = useCallback(async () => {
+    // Don't fetch if in country mode but no country selected
+    if (regionMode === "country" && !selectedCountry) {
+      setLoading(false);
+      setData([]);
+      setStats(null);
+      return;
+    }
+
     setLoading(true);
     const { minCount, maxCount } = FILTER_PRESETS[filterPreset];
     const params = new URLSearchParams({
@@ -507,7 +496,7 @@ export default function Home() {
     });
 
     try {
-      const response = await fetch(`${config.apiEndpoint}?${params}`);
+      const response = await fetch(`${apiEndpoint}?${params}`);
       const result: ApiResponse = await response.json();
 
       setData(result.data);
@@ -518,7 +507,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, filterPreset, sortOrder, config.apiEndpoint]);
+  }, [pagination.page, pagination.limit, filterPreset, sortOrder, apiEndpoint, regionMode, selectedCountry]);
 
   useEffect(() => {
     fetchData();
@@ -577,12 +566,28 @@ export default function Home() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handleRegionChange = (mode: RegionMode) => {
-    setRegionMode(mode);
+  const handleCountrySelect = (countryCode: string, countryName: string) => {
+    // If clicking the same country, revert to global
+    if (selectedCountry === countryCode) {
+      setSelectedCountry(null);
+      setSelectedCountryName(null);
+      setRegionMode("global");
+    } else {
+      setSelectedCountry(countryCode);
+      setSelectedCountryName(countryName);
+      setRegionMode("country");
+    }
     setSearchResults(null);
     setSearchQuery("");
     setPagination((prev) => ({ ...prev, page: 1 }));
     setSelectedSpeciesKey(null);
+  };
+
+  const handleClearCountry = () => {
+    setSelectedCountry(null);
+    setSelectedCountryName(null);
+    setRegionMode("global");
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -598,34 +603,27 @@ export default function Home() {
       const data = await response.json();
       let results = data.results || [];
 
-      // If in a regional mode, fetch region-specific occurrence counts
-      if (regionMode !== "global" && results.length > 0) {
-        const regionConfig = REGION_CONFIG[regionMode];
-        const bounds = regionConfig.bounds;
-
-        if (bounds) {
-          const geometry = `POLYGON((${bounds[0][1]} ${bounds[0][0]}, ${bounds[1][1]} ${bounds[0][0]}, ${bounds[1][1]} ${bounds[1][0]}, ${bounds[0][1]} ${bounds[1][0]}, ${bounds[0][1]} ${bounds[0][0]}))`;
-
-          // Fetch regional counts in parallel
-          const countsPromises = results.map(async (species: SpeciesDetails) => {
-            try {
-              const countResponse = await fetch(
-                `https://api.gbif.org/v1/occurrence/count?taxonKey=${species.key}&geometry=${encodeURIComponent(geometry)}&hasCoordinate=true&hasGeospatialIssue=false`
-              );
-              if (countResponse.ok) {
-                const count = parseInt(await countResponse.text(), 10) || 0;
-                return { ...species, occurrenceCount: count };
-              }
-            } catch {
-              // Keep original count on error
+      // If in country mode with a country selected, fetch country-specific occurrence counts
+      if (regionMode === "country" && selectedCountry && results.length > 0) {
+        // Fetch country-specific counts in parallel
+        const countsPromises = results.map(async (species: SpeciesDetails) => {
+          try {
+            const countResponse = await fetch(
+              `https://api.gbif.org/v1/occurrence/count?taxonKey=${species.key}&country=${selectedCountry}&hasCoordinate=true&hasGeospatialIssue=false`
+            );
+            if (countResponse.ok) {
+              const count = parseInt(await countResponse.text(), 10) || 0;
+              return { ...species, occurrenceCount: count };
             }
-            return species;
-          });
+          } catch {
+            // Keep original count on error
+          }
+          return species;
+        });
 
-          results = await Promise.all(countsPromises);
-          // Filter out species with 0 occurrences in the region
-          results = results.filter((s: SpeciesDetails) => (s.occurrenceCount ?? 0) > 0);
-        }
+        results = await Promise.all(countsPromises);
+        // Filter out species with 0 occurrences in the country
+        results = results.filter((s: SpeciesDetails) => (s.occurrenceCount ?? 0) > 0);
       }
 
       setSearchResults(results);
@@ -641,14 +639,21 @@ export default function Home() {
     setSearchResults(null);
   };
 
-  const handleRowClick = (speciesKey: number, occurrenceCount: number) => {
+  const handleRowClick = (speciesKey: number) => {
     // Toggle: if clicking the same row, close it; otherwise open the new one
     if (selectedSpeciesKey === speciesKey) {
       setSelectedSpeciesKey(null);
     } else {
       setSelectedSpeciesKey(speciesKey);
-      setSelectedOccurrenceCount(occurrenceCount);
     }
+  };
+
+  // Description text based on mode
+  const getDescription = () => {
+    if (regionMode === "country" && selectedCountryName) {
+      return `Plant species in ${selectedCountryName}`;
+    }
+    return "Worldwide GBIF occurrence data";
   };
 
   return (
@@ -658,36 +663,26 @@ export default function Home() {
         <div className="mb-6">
           <p className="text-zinc-600 dark:text-zinc-400">
             {stats
-              ? `Explore ${formatNumber(stats.total)} plant species - ${config.description}`
-              : `Loading ${config.description}...`}
+              ? `Explore ${formatNumber(stats.total)} plant species - ${getDescription()}`
+              : regionMode === "country" && !selectedCountry
+                ? "Select a country on the map to explore its plant species"
+                : `Loading...`}
           </p>
-        </div>
-
-        {/* Region Toggle */}
-        <div className="mb-6 flex gap-2">
-          {(Object.keys(REGION_CONFIG) as RegionMode[]).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => handleRegionChange(mode)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                regionMode === mode
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-              }`}
-            >
-              {mode === "cambridge" && (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              )}
-              {REGION_CONFIG[mode].label}
-            </button>
-          ))}
         </div>
 
         {/* Stats */}
         {stats && <StatsCards stats={stats} />}
+
+        {/* World Map - always visible, smaller */}
+        {mounted && (
+          <div className="mb-6">
+            <WorldMap
+              selectedCountry={selectedCountry}
+              onCountrySelect={handleCountrySelect}
+              onClearSelection={handleClearCountry}
+            />
+          </div>
+        )}
 
         {/* Search */}
         <div className="mb-6">
@@ -815,7 +810,7 @@ export default function Home() {
                   <React.Fragment key={species.key}>
                     <tr
                       className={`hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer ${selectedSpeciesKey === species.key ? "bg-zinc-100 dark:bg-zinc-800" : ""}`}
-                      onClick={() => handleRowClick(species.key, species.occurrenceCount || 0)}
+                      onClick={() => handleRowClick(species.key)}
                     >
                       <td className="hidden md:table-cell px-4 py-2">
                         {species.imageUrl ? (
@@ -850,6 +845,7 @@ export default function Home() {
                         speciesKey={species.key}
                         speciesName={getCandidateKey(species.canonicalName)}
                         regionMode={regionMode}
+                        countryCode={selectedCountry}
                         mounted={mounted}
                         colSpan={5}
                         hasCandidates={!!getCandidateKey(species.canonicalName) && availableCandidates.includes(getCandidateKey(species.canonicalName) ?? "")}
@@ -883,7 +879,7 @@ export default function Home() {
                     <React.Fragment key={record.species_key}>
                       <tr
                         className={`hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer ${selectedSpeciesKey === record.species_key ? "bg-zinc-100 dark:bg-zinc-800" : ""}`}
-                        onClick={() => handleRowClick(record.species_key, record.occurrence_count)}
+                        onClick={() => handleRowClick(record.species_key)}
                       >
                         <td className="px-2 sm:px-4 py-2 text-sm text-zinc-500">#{formatNumber(rank)}</td>
                         <td className="hidden md:table-cell px-4 py-2">
@@ -928,6 +924,7 @@ export default function Home() {
                           speciesKey={record.species_key}
                           speciesName={candidateKey}
                           regionMode={regionMode}
+                          countryCode={selectedCountry}
                           mounted={mounted}
                           colSpan={6}
                           hasCandidates={hasCandidates}
