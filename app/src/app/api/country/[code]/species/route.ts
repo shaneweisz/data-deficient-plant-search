@@ -53,7 +53,7 @@ export async function GET(
           filtered: 0,
           totalOccurrences: 0,
           median: 0,
-          distribution: { lte1: 0, lte10: 0, lte100: 0, lte1000: 0, lte10000: 0 },
+          distribution: { lte1: 0, lte10: 0, lte100: 0, lte1000: 0, lte10000: 0, lte100000: 0, lte1000000: 0 },
         },
         country: countryCode,
       });
@@ -78,6 +78,8 @@ export async function GET(
       lte100: allSpecies.filter(s => s.count <= 100).length,
       lte1000: allSpecies.filter(s => s.count <= 1000).length,
       lte10000: allSpecies.filter(s => s.count <= 10000).length,
+      lte100000: allSpecies.filter(s => s.count <= 100000).length,
+      lte1000000: allSpecies.filter(s => s.count <= 1000000).length,
     };
 
     // Filter by count range

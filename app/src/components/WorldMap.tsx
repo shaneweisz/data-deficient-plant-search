@@ -63,8 +63,6 @@ interface CountryStats {
   };
 }
 
-type HeatmapMode = "none" | "occurrences";
-
 // Color scale for heatmap: cream -> yellow -> orange -> dark red
 function getHeatmapColor(value: number, maxValue: number): string {
   if (value === 0 || maxValue === 0) return "#f5f5f4"; // stone-100
@@ -116,7 +114,6 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [hoveredCountryCode, setHoveredCountryCode] = useState<string | null>(null);
   const [countryStats, setCountryStats] = useState<CountryStats>({});
-  const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>("occurrences");
   const [loading, setLoading] = useState(true);
 
   // Fetch country stats on mount
@@ -142,10 +139,6 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
     if (isSelected) return "#22c55e";
     if (!alpha2) return "#f4f4f5";
 
-    if (heatmapMode === "none") {
-      return "#e4e4e7";
-    }
-
     const stats = countryStats[alpha2];
     if (!stats) return "#f4f4f5";
 
@@ -155,11 +148,11 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
   const hoveredStats = hoveredCountryCode ? countryStats[hoveredCountryCode] : null;
 
   return (
-    <div className="relative bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-5 h-full flex flex-col">
-      {/* Header with controls */}
-      <div className="flex items-center justify-between mb-2">
+    <div className="relative bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 h-full flex flex-col">
+      {/* Header with controls and legend */}
+      <div className="flex items-center justify-between mb-0">
         <div>
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             Explore by Country
           </h2>
           <p className="text-xs text-zinc-500">
@@ -169,15 +162,17 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Heatmap toggle */}
-          <select
-            value={heatmapMode}
-            onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
-            className="text-xs px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
-          >
-            <option value="occurrences">Heatmap</option>
-            <option value="none">Off</option>
-          </select>
+          {/* Legend in header */}
+          <div className="flex items-center gap-1 text-[10px]">
+            <span className="text-zinc-400">Low</span>
+            <div
+              className="w-12 h-1.5 rounded"
+              style={{
+                background: "linear-gradient(to right, #fef3c7, #fde047, #f97316, #991b1b)"
+              }}
+            />
+            <span className="text-zinc-400">High</span>
+          </div>
           {selectedCountry && (
             <button
               onClick={onClearSelection}
@@ -191,7 +186,7 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
 
       {/* Hover tooltip */}
       {hoveredCountry && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-10 bg-white dark:bg-zinc-800 px-3 py-2 rounded shadow-lg text-sm text-zinc-700 dark:text-zinc-300 pointer-events-none">
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 z-10 bg-white dark:bg-zinc-800 px-3 py-2 rounded shadow-lg text-sm text-zinc-700 dark:text-zinc-300 pointer-events-none">
           <div className="font-medium">{hoveredCountry}</div>
           {hoveredStats && (
             <div className="text-xs text-zinc-500">
@@ -202,24 +197,26 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
       )}
 
       {/* Map */}
-      <div className="flex-1 rounded-lg overflow-hidden relative">
+      <div className="flex-1 rounded-lg overflow-hidden relative" style={{ minHeight: "200px" }}>
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-zinc-900/50 z-10">
             <div className="text-sm text-zinc-500">Loading heatmap data...</div>
           </div>
         )}
         <ComposableMap
+          projection="geoNaturalEarth1"
           projectionConfig={{
-            scale: 100,
-            center: [0, 20],
+            scale: 210,
+            center: [0, 0],
           }}
-          height={280}
-          style={{ width: "100%", height: "auto" }}
+          style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
         >
-          <ZoomableGroup>
+          <ZoomableGroup center={[10, 15]} zoom={1.3} minZoom={1.3} maxZoom={1.3}>
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
-                geographies.map((geo) => {
+                geographies
+                  .filter((geo) => geo.properties.name !== "Antarctica")
+                  .map((geo) => {
                   const countryName = geo.properties.name;
                   const alpha2 = NAME_TO_ALPHA2[countryName];
                   const isSelected = selectedCountry === alpha2;
@@ -271,22 +268,6 @@ function WorldMap({ selectedCountry, onCountrySelect, onClearSelection }: WorldM
             </Geographies>
           </ZoomableGroup>
         </ComposableMap>
-
-        {/* Legend */}
-        {heatmapMode !== "none" && (
-          <div className="absolute bottom-2 right-2 bg-white/90 dark:bg-zinc-800/90 px-2 py-1 rounded text-xs">
-            <div className="flex items-center gap-1">
-              <span className="text-zinc-500">Low</span>
-              <div
-                className="w-20 h-2 rounded"
-                style={{
-                  background: "linear-gradient(to right, #fef3c7, #fde047, #f97316, #991b1b)"
-                }}
-              />
-              <span className="text-zinc-500">High</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

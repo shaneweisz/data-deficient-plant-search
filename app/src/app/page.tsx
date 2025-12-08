@@ -86,6 +86,8 @@ interface Stats {
     lte100: number;
     lte1000: number;
     lte10000: number;
+    lte100000: number;
+    lte1000000: number;
   };
 }
 
@@ -148,25 +150,6 @@ function getCandidateKey(canonicalName: string | undefined): string | undefined 
 // ============================================================================
 // Components
 // ============================================================================
-
-function TotalsCards({ stats }: { stats: Stats }) {
-  return (
-    <div className="grid grid-cols-2 gap-4 mb-6">
-      <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
-        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          {formatNumber(stats.total)}
-        </div>
-        <div className="text-sm text-zinc-500">Total Species</div>
-      </div>
-      <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
-        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          {formatNumber(stats.totalOccurrences)}
-        </div>
-        <div className="text-sm text-zinc-500">Total Occurrences</div>
-      </div>
-    </div>
-  );
-}
 
 interface ExpandedRowProps {
   speciesKey: number;
@@ -618,71 +601,117 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Totals */}
-        {stats && <TotalsCards stats={stats} />}
-
-        {/* Distribution and Map side-by-side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {/* Distribution breakdown */}
+        {/* Stats, Map, and Distribution - 15% | 50% | 35% layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-20 gap-4 mb-4">
+          {/* Stats stacked vertically - takes 3 columns (15%) */}
           {stats && (
-            <div className="flex flex-col gap-4">
-              <div className="bg-white dark:bg-zinc-900 rounded-xl p-5 shadow-sm border border-zinc-200 dark:border-zinc-800 flex-1">
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
-                  Species by Occurrence Count
-                </h2>
-                <div className="space-y-2.5">
-                  {[
-                    { label: "≤ 1", count: stats.distribution.lte1 },
-                    { label: "≤ 10", count: stats.distribution.lte10 },
-                    { label: "≤ 100", count: stats.distribution.lte100 },
-                    { label: "≤ 1K", count: stats.distribution.lte1000 },
-                    { label: "≤ 10K", count: stats.distribution.lte10000 },
-                  ].map(({ label, count }) => (
-                    <div key={label} className="flex items-center gap-2">
-                      <div className="w-12 text-xs text-zinc-500 shrink-0">{label}</div>
-                      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden">
-                        <div
-                          className="bg-orange-500 h-full rounded-full transition-all duration-500"
-                          style={{ width: `${(count / stats.total) * 100}%` }}
-                        />
-                      </div>
-                      <div className="w-24 text-xs text-right text-zinc-500 shrink-0">
-                        {formatNumber(count)} ({getPercentage(count, stats.total)}%)
-                      </div>
-                    </div>
-                  ))}
+            <div className="flex flex-col gap-3 lg:col-span-3">
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center">
+                <div className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                  {formatNumber(stats.total)}
                 </div>
+                <div className="text-xs text-zinc-500">Total Species</div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
-                  <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                    {formatNumber(stats.median)}
-                  </div>
-                  <div className="text-xs text-zinc-500">Median per Species</div>
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center">
+                <div className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                  {formatNumber(stats.totalOccurrences)}
                 </div>
-                <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
-                  <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                    {formatNumber(Math.round(stats.totalOccurrences / stats.total))}
-                  </div>
-                  <div className="text-xs text-zinc-500">Mean per Species</div>
+                <div className="text-xs text-zinc-500">Total Occurrences</div>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center">
+                <div className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                  {formatNumber(stats.median)}
                 </div>
+                <div className="text-xs text-zinc-500">Median per Species</div>
+              </div>
+              <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center">
+                <div className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                  {formatNumber(Math.round(stats.totalOccurrences / stats.total))}
+                </div>
+                <div className="text-xs text-zinc-500">Mean per Species</div>
               </div>
             </div>
           )}
 
-          {/* World Map */}
+          {/* World Map - takes 10 columns (50%) */}
           {mounted && (
-            <WorldMap
-              selectedCountry={selectedCountry}
-              onCountrySelect={handleCountrySelect}
-              onClearSelection={handleClearCountry}
-            />
+            <div className="lg:col-span-10">
+              <WorldMap
+                selectedCountry={selectedCountry}
+                onCountrySelect={handleCountrySelect}
+                onClearSelection={handleClearCountry}
+              />
+            </div>
+          )}
+
+          {/* Distribution breakdown - takes 7 columns (35%) */}
+          {stats && (
+            <div className="lg:col-span-7 bg-white dark:bg-zinc-900 rounded-xl p-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Filter by Count
+                </h2>
+                {filterPreset !== "all" && (
+                  <button
+                    onClick={() => handleFilterChange("all")}
+                    className="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400"
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                {[
+                  { label: "≤ 1", count: stats.distribution.lte1, preset: "singletons" as FilterPreset },
+                  { label: "≤ 10", count: stats.distribution.lte10, preset: "veryRare" as FilterPreset },
+                  { label: "≤ 100", count: stats.distribution.lte100, preset: "dataDeficient" as FilterPreset },
+                  { label: "≤ 1K", count: stats.distribution.lte1000, preset: "all" as FilterPreset },
+                  { label: "≤ 10K", count: stats.distribution.lte10000, preset: "all" as FilterPreset },
+                  { label: "≤ 100K", count: stats.distribution.lte100000, preset: "all" as FilterPreset },
+                ].map(({ label, count, preset }) => {
+                  const isActive = (
+                    (label === "≤ 1" && filterPreset === "singletons") ||
+                    (label === "≤ 10" && filterPreset === "veryRare") ||
+                    (label === "≤ 100" && filterPreset === "dataDeficient")
+                  );
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => {
+                        if (label === "≤ 1") handleFilterChange("singletons");
+                        else if (label === "≤ 10") handleFilterChange("veryRare");
+                        else if (label === "≤ 100") handleFilterChange("dataDeficient");
+                        else handleFilterChange("all");
+                      }}
+                      className={`w-full flex items-center gap-2 p-1 rounded-lg transition-colors ${
+                        isActive
+                          ? "bg-orange-100 dark:bg-orange-900/30"
+                          : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      }`}
+                    >
+                      <div className="w-12 text-xs text-zinc-500 shrink-0 text-left">{label}</div>
+                      <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            isActive ? "bg-orange-600" : "bg-orange-500"
+                          }`}
+                          style={{ width: `${(count / stats.total) * 100}%` }}
+                        />
+                      </div>
+                      <div className="w-20 text-[11px] text-right text-zinc-500 shrink-0">
+                        {formatNumber(count)} ({getPercentage(count, stats.total)}%)
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
-          <form onSubmit={handleSearch} className="flex gap-2">
+        {/* Search and Sort row */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1">
             <div className="relative flex-1 max-w-md">
               <input
                 type="text"
@@ -717,51 +746,30 @@ export default function Home() {
               </button>
             )}
           </form>
-        </div>
-
-        {/* Filters */}
-        {searchResults === null && (
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(FILTER_PRESETS) as FilterPreset[]).map((preset) => (
-                <button
-                  key={preset}
-                  onClick={() => handleFilterChange(preset)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filterPreset === preset
-                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                      : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-                  }`}
-                >
-                  {FILTER_PRESETS[preset].label}
-                </button>
-              ))}
-              {availableCandidates.length > 0 && (
-                <button
-                  onClick={() => setShowOnlyWithCandidates(!showOnlyWithCandidates)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                    showOnlyWithCandidates
-                      ? "bg-orange-500 text-white"
-                      : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  Has Predictions
-                </button>
-              )}
-            </div>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-              className="px-3 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+          {availableCandidates.length > 0 && (
+            <button
+              onClick={() => setShowOnlyWithCandidates(!showOnlyWithCandidates)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                showOnlyWithCandidates
+                  ? "bg-orange-500 text-white"
+                  : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+              }`}
             >
-              <option value="desc">Most occurrences</option>
-              <option value="asc">Least occurrences</option>
-            </select>
-          </div>
-        )}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              Has Predictions
+            </button>
+          )}
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+            className="px-3 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+          >
+            <option value="desc">Most occurrences</option>
+            <option value="asc">Least occurrences</option>
+          </select>
+        </div>
 
         {/* Results count */}
         <div className="text-sm text-zinc-500 mb-4">

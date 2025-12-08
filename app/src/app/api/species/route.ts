@@ -66,6 +66,8 @@ export async function GET(request: NextRequest) {
       lte100: data.filter((d) => d.occurrence_count <= 100).length,
       lte1000: data.filter((d) => d.occurrence_count <= 1000).length,
       lte10000: data.filter((d) => d.occurrence_count <= 10000).length,
+      lte100000: data.filter((d) => d.occurrence_count <= 100000).length,
+      lte1000000: data.filter((d) => d.occurrence_count <= 1000000).length,
     },
   };
 
