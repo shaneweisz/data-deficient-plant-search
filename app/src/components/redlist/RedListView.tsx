@@ -42,15 +42,25 @@ interface AssessmentsResponse {
   error?: string;
 }
 
+interface PreviousAssessment {
+  year: string;
+  assessment_id: number;
+  category: string;
+}
+
 interface Species {
   sis_taxon_id: number;
   assessment_id: number;
   scientific_name: string;
+  family: string | null;
   category: string;
+  assessment_date: string | null;
   year_published: string;
   url: string;
+  population_trend: string | null;
+  countries: string[];
   assessment_count: number;
-  previous_assessments: string[];
+  previous_assessments: PreviousAssessment[];
 }
 
 interface SpeciesDetails {
@@ -779,14 +789,40 @@ export default function RedListView() {
                       {details?.criteria || "—"}
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                      {s.year_published}
+                      <span className="relative group cursor-default">
+                        {s.year_published}
+                        {s.assessment_date && (
+                          <span className="absolute left-0 bottom-full mb-1 px-2 py-1 text-xs bg-zinc-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                            Assessed on {new Date(s.assessment_date).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </span>
+                        )}
+                      </span>
                       {yearsSince > 10 && (
                         <span className="ml-1 text-xs text-amber-600">({yearsSince}y ago)</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-sm">
                       {s.previous_assessments.length > 0
-                        ? s.previous_assessments.join(", ")
+                        ? s.previous_assessments.map((pa, idx) => (
+                            <span key={pa.assessment_id}>
+                              <a
+                                href={`https://www.iucnredlist.org/species/${s.sis_taxon_id}/${pa.assessment_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:underline"
+                              >
+                                {pa.year}
+                                <span className="ml-0.5 text-[10px]">
+                                  ({pa.category})
+                                </span>
+                              </a>
+                              {idx < s.previous_assessments.length - 1 && ", "}
+                            </span>
+                          ))
                         : "—"}
                     </td>
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
