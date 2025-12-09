@@ -631,9 +631,7 @@ export default function Home() {
               GBIF Dashboard
             </h1>
             <p className="text-zinc-600 dark:text-zinc-400">
-              {selectedTaxon
-                ? `Select a taxon below to explore GBIF occurrence data`
-                : "Select a taxon below to explore GBIF occurrence data"}
+              Click a taxon row for details, click again to return
             </p>
           </div>
           <div className="flex items-center gap-2">
