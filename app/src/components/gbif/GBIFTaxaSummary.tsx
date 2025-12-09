@@ -133,8 +133,23 @@ export default function GBIFTaxaSummary({ onSelectTaxon, selectedTaxon }: Props)
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
-                  {formatNumber(taxon.estimatedDescribed)}
+                <td className="px-4 py-3 text-right tabular-nums">
+                  {taxon.estimatedSourceUrl ? (
+                    <a
+                      href={taxon.estimatedSourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      title={`Source: ${taxon.estimatedSource}`}
+                    >
+                      {formatNumber(taxon.estimatedDescribed)}
+                    </a>
+                  ) : (
+                    <span className="text-zinc-600 dark:text-zinc-400">
+                      {formatNumber(taxon.estimatedDescribed)}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
                   {taxon.gbifDataAvailable ? formatNumber(taxon.gbifSpeciesCount) : "—"}

@@ -135,8 +135,23 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
-                  {taxon.estimatedDescribed.toLocaleString()}
+                <td className="px-4 py-3 text-right tabular-nums">
+                  {taxon.estimatedSourceUrl ? (
+                    <a
+                      href={taxon.estimatedSourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      title={`Source: ${taxon.estimatedSource}`}
+                    >
+                      {taxon.estimatedDescribed.toLocaleString()}
+                    </a>
+                  ) : (
+                    <span className="text-zinc-600 dark:text-zinc-400">
+                      {taxon.estimatedDescribed.toLocaleString()}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
                   {taxon.available ? taxon.totalAssessed.toLocaleString() : "—"}
