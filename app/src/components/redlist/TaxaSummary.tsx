@@ -91,7 +91,8 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
                 % Assessed
               </th>
               <th className="px-4 py-2 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                # Outdated
+                <div># Outdated</div>
+                <div className="font-normal normal-case tracking-normal">(10+ years)</div>
               </th>
               <th className="px-4 py-2 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 <div>% Outdated</div>
