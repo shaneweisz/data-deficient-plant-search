@@ -1,42 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { getTaxonConfig } from "@/config/taxa";
 
 interface SpeciesRecord {
   species_key: number;
   occurrence_count: number;
 }
 
-let cachedData: SpeciesRecord[] | null = null;
+// Cache per taxon
+const dataCache: Record<string, SpeciesRecord[]> = {};
 
-async function loadData(): Promise<SpeciesRecord[]> {
-  if (cachedData) return cachedData;
+async function loadData(taxonId: string): Promise<SpeciesRecord[]> {
+  if (dataCache[taxonId]) return dataCache[taxonId];
 
-  const filePath = path.join(process.cwd(), "public", "plant_species_counts.csv");
-  const fileContent = await fs.readFile(filePath, "utf-8");
-  const lines = fileContent.trim().split("\n");
+  const taxon = getTaxonConfig(taxonId);
+  const filePath = path.join(process.cwd(), "public", taxon.gbifDataFile);
 
-  // Skip header
-  cachedData = lines.slice(1).map((line) => {
-    const [species_key, occurrence_count] = line.split(",");
-    return {
-      species_key: parseInt(species_key, 10),
-      occurrence_count: parseInt(occurrence_count, 10),
-    };
-  });
+  try {
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    const lines = fileContent.trim().split("\n");
 
-  return cachedData;
+    // Skip header
+    dataCache[taxonId] = lines.slice(1).map((line) => {
+      const [species_key, occurrence_count] = line.split(",");
+      return {
+        species_key: parseInt(species_key, 10),
+        occurrence_count: parseInt(occurrence_count, 10),
+      };
+    });
+
+    return dataCache[taxonId];
+  } catch {
+    // File doesn't exist for this taxon yet
+    return [];
+  }
 }
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
+  const taxonId = searchParams.get("taxon") || "plantae";
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = Math.min(parseInt(searchParams.get("limit") || "100", 10), 1000);
   const minCount = parseInt(searchParams.get("minCount") || "0", 10);
   const maxCount = parseInt(searchParams.get("maxCount") || "999999999", 10);
   const sortOrder = searchParams.get("sort") || "desc";
 
-  const data = await loadData();
+  const data = await loadData(taxonId);
 
   // Filter by occurrence count range
   let filtered = data.filter(

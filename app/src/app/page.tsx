@@ -4,6 +4,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { getTaxonConfig } from "@/config/taxa";
+
+// Dynamically import GBIFTaxaSummary component
+const GBIFTaxaSummary = dynamic(
+  () => import("../components/gbif/GBIFTaxaSummary"),
+  { ssr: false }
+);
 
 // Dynamically import Leaflet components
 const MapContainer = dynamic(
@@ -363,6 +370,9 @@ function ExpandedRow({ speciesKey, speciesName, regionMode, countryCode, mounted
 // ============================================================================
 
 export default function Home() {
+  // Taxon selection (null = show summary view)
+  const [selectedTaxon, setSelectedTaxon] = useState<string | null>("plantae");
+
   // Region mode
   const [regionMode, setRegionMode] = useState<RegionMode>("global");
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -393,7 +403,10 @@ export default function Home() {
   const [availableCandidates, setAvailableCandidates] = useState<string[]>([]);
   const [showOnlyWithCandidates, setShowOnlyWithCandidates] = useState(false);
 
-  // Compute API endpoint based on mode
+  // Get taxon config
+  const taxonConfig = selectedTaxon ? getTaxonConfig(selectedTaxon) : null;
+
+  // Compute API endpoint based on mode and taxon
   const apiEndpoint = regionMode === "country" && selectedCountry
     ? `/api/country/${selectedCountry}/species`
     : "/api/species";
@@ -414,8 +427,28 @@ export default function Home() {
       .catch(console.error);
   }, []);
 
-  // Fetch data based on region mode
+  // Reset state when taxon changes
+  useEffect(() => {
+    setData([]);
+    setStats(null);
+    setPagination({ page: 1, limit: 10, total: 0, totalPages: 0 });
+    setFilterPreset("all");
+    setSearchQuery("");
+    setSearchResults(null);
+    setSelectedSpeciesKey(null);
+    setSpeciesCache({});
+  }, [selectedTaxon]);
+
+  // Fetch data based on region mode and taxon
   const fetchData = useCallback(async () => {
+    // Don't fetch if no taxon selected (showing summary view)
+    if (!selectedTaxon) {
+      setLoading(false);
+      setData([]);
+      setStats(null);
+      return;
+    }
+
     // Don't fetch if in country mode but no country selected
     if (regionMode === "country" && !selectedCountry) {
       setLoading(false);
@@ -427,6 +460,7 @@ export default function Home() {
     setLoading(true);
     const { minCount, maxCount } = FILTER_PRESETS[filterPreset];
     const params = new URLSearchParams({
+      taxon: selectedTaxon,
       page: pagination.page.toString(),
       limit: pagination.limit.toString(),
       minCount: minCount.toString(),
@@ -446,7 +480,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, filterPreset, sortOrder, apiEndpoint, regionMode, selectedCountry]);
+  }, [pagination.page, pagination.limit, filterPreset, sortOrder, apiEndpoint, regionMode, selectedCountry, selectedTaxon]);
 
   useEffect(() => {
     fetchData();
@@ -593,16 +627,42 @@ export default function Home() {
         {/* Header */}
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-              Flora Explorer
-            </h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+                GBIF Explorer
+              </h1>
+              {selectedTaxon && taxonConfig && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: taxonConfig.color }}
+                  />
+                  <span className="text-xl font-medium text-zinc-700 dark:text-zinc-300">
+                    {taxonConfig.name}
+                  </span>
+                </div>
+              )}
+            </div>
             <p className="text-zinc-600 dark:text-zinc-400">
-              {stats
-                ? `Breaking down GBIF occurrence data for ${formatNumber(stats.total)} plant species ${selectedCountry && selectedCountryName ? `in ${selectedCountryName}` : "across the world"}`
+              {!selectedTaxon
+                ? "Select a taxon to explore GBIF occurrence data"
+                : stats
+                ? `Breaking down GBIF occurrence data for ${formatNumber(stats.total)} ${taxonConfig?.name.toLowerCase() || "species"} ${selectedCountry && selectedCountryName ? `in ${selectedCountryName}` : "across the world"}`
                 : regionMode === "country" && !selectedCountry
-                  ? "Select a country on the map to explore its plant species"
+                  ? `Select a country on the map to explore ${taxonConfig?.name.toLowerCase() || "species"}`
                   : `Loading...`}
             </p>
+            {selectedTaxon && (
+              <button
+                onClick={() => setSelectedTaxon(null)}
+                className="mt-2 text-sm text-green-600 dark:text-green-400 hover:underline flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to all taxa
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Tab Navigation */}
@@ -630,10 +690,18 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Stats, Map, and Distribution - 15% | 50% | 35% layout */}
+        {/* Show taxa summary when no taxon selected, otherwise show species details */}
+        {!selectedTaxon ? (
+          <GBIFTaxaSummary
+            onSelectTaxon={setSelectedTaxon}
+            selectedTaxon={selectedTaxon}
+          />
+        ) : (
+          <>
+            {/* Stats, Map, and Distribution - 15% | 50% | 35% layout */}
             <div className="grid grid-cols-1 lg:grid-cols-20 gap-4 mb-4">
               {/* Stats stacked vertically - takes 3 columns (15%) */}
-          {stats && (
+              {stats && (
             <div className="flex flex-col gap-3 lg:col-span-3">
               <div className="bg-white dark:bg-zinc-900 rounded-xl p-3 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-center">
                 <div className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -971,29 +1039,31 @@ export default function Home() {
           </table>
         </div>
 
-        {/* Pagination */}
-        {searchResults === null && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-zinc-500">
-              Page {pagination.page} of {formatNumber(pagination.totalPages)}
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPagination((p) => ({ ...p, page: p.page - 1 }))}
-                disabled={pagination.page <= 1}
-                className="px-4 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPagination((p) => ({ ...p, page: p.page + 1 }))}
-                disabled={pagination.page >= pagination.totalPages}
-                className="px-4 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-              >
-                Next
-              </button>
-            </div>
-          </div>
+            {/* Pagination */}
+            {searchResults === null && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-zinc-500">
+                  Page {pagination.page} of {formatNumber(pagination.totalPages)}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPagination((p) => ({ ...p, page: p.page - 1 }))}
+                    disabled={pagination.page <= 1}
+                    className="px-4 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setPagination((p) => ({ ...p, page: p.page + 1 }))}
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="px-4 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 disabled:opacity-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

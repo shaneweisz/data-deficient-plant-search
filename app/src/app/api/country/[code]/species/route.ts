@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// GBIF kingdom key for Plantae
-const PLANTAE_KINGDOM_KEY = 6;
+import { getTaxonConfig } from "@/config/taxa";
 
 export async function GET(
   request: NextRequest,
@@ -11,16 +9,18 @@ export async function GET(
   const countryCode = code.toUpperCase();
 
   const searchParams = request.nextUrl.searchParams;
+  const taxonId = searchParams.get("taxon") || "plantae";
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "10");
   const minCount = parseInt(searchParams.get("minCount") || "0");
   const maxCount = parseInt(searchParams.get("maxCount") || "999999999");
   const sort = searchParams.get("sort") || "desc";
 
+  const taxon = getTaxonConfig(taxonId);
+
   try {
     // Use GBIF occurrence search with facets to get species counts for the country
     const gbifParams = new URLSearchParams({
-      kingdomKey: PLANTAE_KINGDOM_KEY.toString(),
       country: countryCode,
       facet: "speciesKey",
       facetLimit: "100000",
@@ -28,6 +28,13 @@ export async function GET(
       hasCoordinate: "true",
       hasGeospatialIssue: "false",
     });
+
+    // Add taxon filter - use classKey if available, otherwise kingdomKey
+    if (taxon.gbifClassKey) {
+      gbifParams.set("classKey", taxon.gbifClassKey.toString());
+    } else if (taxon.gbifKingdomKey) {
+      gbifParams.set("kingdomKey", taxon.gbifKingdomKey.toString());
+    }
 
     const response = await fetch(
       `https://api.gbif.org/v1/occurrence/search?${gbifParams}`

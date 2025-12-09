@@ -1,5 +1,5 @@
 /**
- * Taxa configuration for IUCN Red List data
+ * Taxa configuration for IUCN Red List and GBIF data
  *
  * Each taxon has:
  * - id: Unique identifier used in API routes and file names
@@ -7,7 +7,10 @@
  * - apiEndpoint: IUCN API endpoint path (kingdom or class)
  * - estimatedDescribed: Estimated number of described species (hardcoded for now)
  * - estimatedSource: Source/citation for the estimate
- * - dataFile: Path to the pre-computed JSON file
+ * - dataFile: Path to the pre-computed JSON file (Red List)
+ * - gbifDataFile: Path to the pre-computed CSV file (GBIF species counts)
+ * - gbifKingdomKey: GBIF backbone taxonomy kingdom key
+ * - gbifClassKey: GBIF backbone taxonomy class key (for filtering within kingdom)
  * - color: Theme color for UI elements
  */
 
@@ -18,6 +21,11 @@ export interface TaxonConfig {
   estimatedDescribed: number;
   estimatedSource: string;
   dataFile: string;
+  gbifDataFile: string;
+  gbifKingdomKey?: number;
+  gbifClassKey?: number;
+  gbifClassKeys?: number[]; // Multiple class keys for taxa like Reptilia
+  gbifOrderKeys?: number[]; // Multiple order keys for taxa like Fish (no class in GBIF)
   color: string;
   icon?: string;
 }
@@ -30,6 +38,8 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 380801,
     estimatedSource: "WFO 2025-06",
     dataFile: "redlist-plantae.json",
+    gbifDataFile: "gbif-plantae.csv",
+    gbifKingdomKey: 6,
     color: "#22c55e", // green-500
   },
   {
@@ -39,6 +49,8 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 148000,
     estimatedSource: "Species Fungorum 2024",
     dataFile: "redlist-fungi.json",
+    gbifDataFile: "gbif-fungi.csv",
+    gbifKingdomKey: 5,
     color: "#d97706", // amber-600
   },
   {
@@ -48,6 +60,9 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 6500,
     estimatedSource: "ASM 2024",
     dataFile: "redlist-mammalia.json",
+    gbifDataFile: "gbif-mammalia.csv",
+    gbifKingdomKey: 1,
+    gbifClassKey: 359,
     color: "#f97316", // orange-500
   },
   {
@@ -57,6 +72,9 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 11000,
     estimatedSource: "BirdLife 2024",
     dataFile: "redlist-aves.json",
+    gbifDataFile: "gbif-aves.csv",
+    gbifKingdomKey: 1,
+    gbifClassKey: 212,
     color: "#3b82f6", // blue-500
   },
   {
@@ -66,6 +84,10 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 12000,
     estimatedSource: "Reptile Database 2024",
     dataFile: "redlist-reptilia.json",
+    gbifDataFile: "gbif-reptilia.csv",
+    gbifKingdomKey: 1,
+    // GBIF splits Reptilia into: Squamata, Crocodylia, Testudines
+    gbifClassKeys: [11592253, 11493978, 11418114],
     color: "#84cc16", // lime-500
   },
   {
@@ -75,6 +97,9 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 8700,
     estimatedSource: "AmphibiaWeb 2024",
     dataFile: "redlist-amphibia.json",
+    gbifDataFile: "gbif-amphibia.csv",
+    gbifKingdomKey: 1,
+    gbifClassKey: 131,
     color: "#14b8a6", // teal-500
   },
   {
@@ -84,16 +109,11 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 35000,
     estimatedSource: "FishBase 2024",
     dataFile: "redlist-actinopterygii.json",
+    gbifDataFile: "gbif-actinopterygii.csv",
+    gbifKingdomKey: 1,
+    // GBIF has no class for fish - query by order keys instead
+    gbifOrderKeys: [389,391,427,428,446,494,495,496,497,498,499,537,538,547,548,549,550,587,588,589,590,696,708,742,752,753,772,773,774,781,836,848,857,860,861,888,889,890,898,929,975,976,1067,1153,1313],
     color: "#06b6d4", // cyan-500
-  },
-  {
-    id: "chondrichthyes",
-    name: "Sharks & Rays",
-    apiEndpoint: "class/Chondrichthyes",
-    estimatedDescribed: 1300,
-    estimatedSource: "Shark References 2024",
-    dataFile: "redlist-chondrichthyes.json",
-    color: "#6366f1", // indigo-500
   },
   {
     id: "insecta",
@@ -102,52 +122,10 @@ export const TAXA: TaxonConfig[] = [
     estimatedDescribed: 1000000,
     estimatedSource: "Estimated",
     dataFile: "redlist-insecta.json",
+    gbifDataFile: "gbif-insecta.csv",
+    gbifKingdomKey: 1,
+    gbifClassKey: 216,
     color: "#eab308", // yellow-500
-  },
-  {
-    id: "arachnida",
-    name: "Arachnids",
-    apiEndpoint: "class/Arachnida",
-    estimatedDescribed: 112000,
-    estimatedSource: "World Spider Catalog 2024",
-    dataFile: "redlist-arachnida.json",
-    color: "#a855f7", // purple-500
-  },
-  {
-    id: "malacostraca",
-    name: "Crustaceans",
-    apiEndpoint: "class/Malacostraca",
-    estimatedDescribed: 40000,
-    estimatedSource: "WoRMS 2024",
-    dataFile: "redlist-malacostraca.json",
-    color: "#ec4899", // pink-500
-  },
-  {
-    id: "gastropoda",
-    name: "Snails & Slugs",
-    apiEndpoint: "class/Gastropoda",
-    estimatedDescribed: 65000,
-    estimatedSource: "MolluscaBase 2024",
-    dataFile: "redlist-gastropoda.json",
-    color: "#78716c", // stone-500
-  },
-  {
-    id: "bivalvia",
-    name: "Bivalves",
-    apiEndpoint: "class/Bivalvia",
-    estimatedDescribed: 9200,
-    estimatedSource: "MolluscaBase 2024",
-    dataFile: "redlist-bivalvia.json",
-    color: "#0ea5e9", // sky-500
-  },
-  {
-    id: "anthozoa",
-    name: "Corals & Anemones",
-    apiEndpoint: "class/Anthozoa",
-    estimatedDescribed: 7500,
-    estimatedSource: "WoRMS 2024",
-    dataFile: "redlist-anthozoa.json",
-    color: "#f43f5e", // rose-500
   },
 ];
 
