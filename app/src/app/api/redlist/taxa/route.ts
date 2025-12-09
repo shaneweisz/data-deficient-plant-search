@@ -3,8 +3,14 @@ import * as fs from "fs";
 import * as path from "path";
 import { TAXA, CATEGORY_COLORS, TaxonConfig } from "@/config/taxa";
 
+interface SpeciesRecord {
+  sis_taxon_id: number;
+  category: string;
+  assessment_date?: string;
+}
+
 interface PrecomputedData {
-  species: { category: string }[];
+  species: SpeciesRecord[];
   metadata: {
     totalSpecies: number;
     fetchedAt: string;
@@ -27,8 +33,8 @@ interface TaxonSummary {
     count: number;
     color: string;
   }[];
-  threatened: number;
-  percentThreatened: number;
+  outdated: number;
+  percentOutdated: number;
   lastUpdated: string | null;
 }
 
@@ -52,7 +58,7 @@ function loadSingleDataFile(dataFile: string): PrecomputedData | null {
 }
 
 function loadTaxonData(taxon: TaxonConfig): PrecomputedData | null {
-  // If taxon has multiple data files (combined taxa like Fishes, Molluscs)
+  // If taxon has multiple data files (combined taxa like Fishes, Invertebrates)
   if (taxon.dataFiles && taxon.dataFiles.length > 0) {
     const allData: PrecomputedData[] = [];
 
@@ -113,8 +119,8 @@ function buildSummary(): TaxonSummary[] {
         totalAssessed: 0,
         percentAssessed: 0,
         byCategory: [],
-        threatened: 0,
-        percentThreatened: 0,
+        outdated: 0,
+        percentOutdated: 0,
         lastUpdated: null,
       };
     }
@@ -125,20 +131,22 @@ function buildSummary(): TaxonSummary[] {
       color: CATEGORY_COLORS[code],
     }));
 
-    // Threatened = CR + EN + VU
-    const threatened =
-      (data.metadata.byCategory["CR"] || 0) +
-      (data.metadata.byCategory["EN"] || 0) +
-      (data.metadata.byCategory["VU"] || 0);
+    // Calculate outdated assessments (>10 years old based on assessment_date)
+    const currentYear = new Date().getFullYear();
+    const outdated = data.species.filter((s) => {
+      if (!s.assessment_date) return false;
+      const assessmentYear = new Date(s.assessment_date).getFullYear();
+      return currentYear - assessmentYear > 10;
+    }).length;
 
     const percentAssessed =
       taxon.estimatedDescribed > 0
         ? (data.metadata.totalSpecies / taxon.estimatedDescribed) * 100
         : 0;
 
-    const percentThreatened =
+    const percentOutdated =
       data.metadata.totalSpecies > 0
-        ? (threatened / data.metadata.totalSpecies) * 100
+        ? (outdated / data.metadata.totalSpecies) * 100
         : 0;
 
     return {
@@ -152,8 +160,8 @@ function buildSummary(): TaxonSummary[] {
       totalAssessed: data.metadata.totalSpecies,
       percentAssessed: Math.round(percentAssessed * 10) / 10,
       byCategory,
-      threatened,
-      percentThreatened: Math.round(percentThreatened * 10) / 10,
+      outdated,
+      percentOutdated: Math.round(percentOutdated * 10) / 10,
       lastUpdated: data.metadata.fetchedAt,
     };
   });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CATEGORY_COLORS } from "@/config/taxa";
+import { CATEGORY_COLORS, CATEGORY_NAMES } from "@/config/taxa";
 
 interface TaxonSummary {
   id: string;
@@ -18,8 +18,8 @@ interface TaxonSummary {
     count: number;
     color: string;
   }[];
-  threatened: number;
-  percentThreatened: number;
+  outdated: number;
+  percentOutdated: number;
   lastUpdated: string | null;
 }
 
@@ -70,7 +70,7 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
 
   // Calculate totals
   const totalAssessed = taxa.reduce((sum, t) => sum + t.totalAssessed, 0);
-  const totalThreatened = taxa.reduce((sum, t) => sum + t.threatened, 0);
+  const totalOutdated = taxa.reduce((sum, t) => sum + t.outdated, 0);
   const totalDescribed = taxa.reduce((sum, t) => sum + t.estimatedDescribed, 0);
 
   return (
@@ -104,10 +104,7 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
                 Category Distribution
               </th>
               <th className="px-4 py-2 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                Threatened
-              </th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                % Threatened
+                % Outdated
               </th>
             </tr>
           </thead>
@@ -172,7 +169,7 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
                               width: `${(cat.count / taxon.totalAssessed) * 100}%`,
                               backgroundColor: cat.color,
                             }}
-                            title={`${cat.code}: ${cat.count.toLocaleString()}`}
+                            title={`${CATEGORY_NAMES[cat.code] || cat.code} (${cat.code}): ${((cat.count / taxon.totalAssessed) * 100).toFixed(1)}%`}
                           />
                         ))}
                     </div>
@@ -181,10 +178,7 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
                   )}
                 </td>
                 <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
-                  {taxon.available ? taxon.threatened.toLocaleString() : "—"}
-                </td>
-                <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 tabular-nums">
-                  {taxon.available ? `${taxon.percentThreatened.toFixed(1)}%` : "—"}
+                  {taxon.available ? `${taxon.percentOutdated.toFixed(1)}%` : "—"}
                 </td>
               </tr>
             ))}
@@ -205,10 +199,7 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
               </td>
               <td className="px-4 py-3"></td>
               <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300 tabular-nums">
-                {totalThreatened.toLocaleString()}
-              </td>
-              <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-300 tabular-nums">
-                {((totalThreatened / totalAssessed) * 100).toFixed(1)}%
+                {((totalOutdated / totalAssessed) * 100).toFixed(1)}%
               </td>
             </tr>
           </tfoot>
