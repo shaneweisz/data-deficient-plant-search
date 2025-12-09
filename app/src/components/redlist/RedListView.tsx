@@ -93,8 +93,35 @@ interface RedListViewProps {
 }
 
 export default function RedListView({ onTaxonChange }: RedListViewProps) {
-  // Selected taxon (null = show summary table)
-  const [selectedTaxon, setSelectedTaxon] = useState<string | null>(null);
+  // Selected taxon (null = show summary table), synced with URL hash
+  const [selectedTaxon, setSelectedTaxon] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.slice(1);
+      return hash || null;
+    }
+    return null;
+  });
+
+  // Sync URL hash with selected taxon
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      setSelectedTaxon(hash || null);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Update URL hash when taxon changes (and push to history for back button)
+  const handleTaxonSelect = (taxonId: string | null) => {
+    if (taxonId) {
+      window.history.pushState(null, "", `#${taxonId}`);
+    } else {
+      window.history.pushState(null, "", window.location.pathname);
+    }
+    setSelectedTaxon(taxonId);
+  };
   const [taxonInfo, setTaxonInfo] = useState<TaxonInfo | null>(null);
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [assessments, setAssessments] = useState<AssessmentsResponse | null>(null);
@@ -407,7 +434,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
     <div className="space-y-4">
       {/* Always show Taxa Summary table */}
       <TaxaSummary
-        onSelectTaxon={setSelectedTaxon}
+        onSelectTaxon={handleTaxonSelect}
         selectedTaxon={selectedTaxon}
       />
 
