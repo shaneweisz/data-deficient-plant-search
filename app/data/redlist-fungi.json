@@ -1,0 +1,3833 @@
+{
+  "species": [
+    {
+      "sis_taxon_id": 43994,
+      "assessment_id": 10838980,
+      "scientific_name": "Cladonia perforata",
+      "family": "CLADONIACEAE",
+      "category": "EN",
+      "assessment_date": "2003-04-30",
+      "year_published": "2003",
+      "url": "https://www.iucnredlist.org/species/43994/10838980",
+      "population_trend": "Unknown",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 43995,
+      "assessment_id": 10839336,
+      "scientific_name": "Erioderma pedicellatum",
+      "family": "PANNARIACEAE",
+      "category": "CR",
+      "assessment_date": "2003-04-30",
+      "year_published": "2003",
+      "url": "https://www.iucnredlist.org/species/43995/10839336",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 58515314,
+      "assessment_id": 58515381,
+      "scientific_name": "Sarcosoma globosum",
+      "family": "SARCOSOMATACEAE",
+      "category": "NT",
+      "assessment_date": "2015-07-18",
+      "year_published": "2015",
+      "url": "https://www.iucnredlist.org/species/58515314/58515381",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "CZ",
+        "EE",
+        "FI",
+        "LV",
+        "NO",
+        "PL",
+        "RU",
+        "SE",
+        "UA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 58517597,
+      "assessment_id": 58517712,
+      "scientific_name": "Cordyceps kirkii",
+      "family": "CORDYCIPITACEAE",
+      "category": "DD",
+      "assessment_date": "2019-07-23",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/58517597/58517712",
+      "population_trend": "Unknown",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 58517895,
+      "assessment_id": 58517903,
+      "scientific_name": "Cyttaria exigua",
+      "family": "CYTTARIACEAE",
+      "category": "LC",
+      "assessment_date": "2020-04-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/58517895/58517903",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 58520980,
+      "assessment_id": 58520984,
+      "scientific_name": "Gymnoderma insulare",
+      "family": "CLADONIACEAE",
+      "category": "EN",
+      "assessment_date": "2014-08-14",
+      "year_published": "2014",
+      "url": "https://www.iucnredlist.org/species/58520980/58520984",
+      "population_trend": "Decreasing",
+      "countries": [
+        "JP",
+        "TW"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70382754,
+      "assessment_id": 70382757,
+      "scientific_name": "Ramalina jamesii",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2022-02-12",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70382754/70382757",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70382792,
+      "assessment_id": 70383112,
+      "scientific_name": "Ramalina nematodes",
+      "family": "RAMALINACEAE",
+      "category": "NT",
+      "assessment_date": "2022-02-11",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70382792/70383112",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70385861,
+      "assessment_id": 70385867,
+      "scientific_name": "Buellia asterella",
+      "family": "CALICIACEAE",
+      "category": "CR",
+      "assessment_date": "2015-06-29",
+      "year_published": "2015",
+      "url": "https://www.iucnredlist.org/species/70385861/70385867",
+      "population_trend": "Decreasing",
+      "countries": [
+        "DE",
+        "NO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70386009,
+      "assessment_id": 70386019,
+      "scientific_name": "Cetradonia linearis",
+      "family": "CLADONIACEAE",
+      "category": "VU",
+      "assessment_date": "2015-08-11",
+      "year_published": "2015",
+      "url": "https://www.iucnredlist.org/species/70386009/70386019",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70386122,
+      "assessment_id": 70386125,
+      "scientific_name": "Sulcaria isidiifera",
+      "family": "PARMELIACEAE",
+      "category": "CR",
+      "assessment_date": "2017-08-30",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/70386122/70386125",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70416939,
+      "assessment_id": 70417006,
+      "scientific_name": "Chlorostroma vestlandicum",
+      "family": "HYPOXYLACEAE",
+      "category": "EN",
+      "assessment_date": "2021-05-07",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/70416939/70417006",
+      "population_trend": "Decreasing",
+      "countries": [
+        "NO",
+        "RU"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71542492,
+      "assessment_id": 71542495,
+      "scientific_name": "Cetreliopsis papuae",
+      "family": "PARMELIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-25",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/71542492/71542495",
+      "population_trend": "Unknown",
+      "countries": [
+        "PG"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71598929,
+      "assessment_id": 71599036,
+      "scientific_name": "Leptogium rivulare",
+      "family": "COLLEMATACEAE",
+      "category": "NT",
+      "assessment_date": "2015-07-02",
+      "year_published": "2015",
+      "url": "https://www.iucnredlist.org/species/71598929/71599036",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BY",
+        "CA",
+        "FR",
+        "LT",
+        "RU",
+        "SE",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71605769,
+      "assessment_id": 71605853,
+      "scientific_name": "Lethariella togashii",
+      "family": "PARMELIACEAE",
+      "category": "VU",
+      "assessment_date": "2017-08-31",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/71605769/71605853",
+      "population_trend": "Decreasing",
+      "countries": [
+        "JP",
+        "RU"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71622372,
+      "assessment_id": 71622534,
+      "scientific_name": "Santessoniella crossophylla",
+      "family": "PANNARIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-26",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/71622372/71622534",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71639618,
+      "assessment_id": 71640065,
+      "scientific_name": "Xanthoparmelia beccae",
+      "family": "PARMELIACEAE",
+      "category": "VU",
+      "assessment_date": "2017-08-25",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/71639618/71640065",
+      "population_trend": "Decreasing",
+      "countries": [
+        "SH"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71670425,
+      "assessment_id": 71670636,
+      "scientific_name": "Sticta alpinotropica",
+      "family": "LOBARIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-30",
+      "year_published": "2017",
+      "url": "https://www.iucnredlist.org/species/71670425/71670636",
+      "population_trend": "Unknown",
+      "countries": [
+        "PG"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 74848109,
+      "assessment_id": 74848112,
+      "scientific_name": "Mycosphaerella coussapoae",
+      "family": "MYCOSPHAERELLACEAE",
+      "category": "EN",
+      "assessment_date": "2024-03-12",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/74848109/74848112",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702763,
+      "assessment_id": 80702766,
+      "scientific_name": "Acanthothecis leucoxanthoides",
+      "family": "GRAPHIDACEAE",
+      "category": "CR",
+      "assessment_date": "2017-08-30",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/80702763/80702766",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702772,
+      "assessment_id": 80702775,
+      "scientific_name": "Acanthothecis paucispora",
+      "family": "GRAPHIDACEAE",
+      "category": "CR",
+      "assessment_date": "2017-08-31",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/80702772/80702775",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702807,
+      "assessment_id": 80702810,
+      "scientific_name": "Arthonia cupressina",
+      "family": "ARTHONIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-04",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702807/80702810",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702824,
+      "assessment_id": 80702827,
+      "scientific_name": "Arthopyrenia betulicola",
+      "family": "ARTHOPYRENIACEAE",
+      "category": "CR",
+      "assessment_date": "2019-10-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702824/80702827",
+      "population_trend": "Unknown",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702844,
+      "assessment_id": 80702847,
+      "scientific_name": "Buellia sharpiana",
+      "family": "CALICIACEAE",
+      "category": "VU",
+      "assessment_date": "2020-07-07",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702844/80702847",
+      "population_trend": "Unknown",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702853,
+      "assessment_id": 80702858,
+      "scientific_name": "Cladonia appalachiensis",
+      "family": "CLADONIACEAE",
+      "category": "EN",
+      "assessment_date": "2019-10-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702853/80702858",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702901,
+      "assessment_id": 80702904,
+      "scientific_name": "Graphis sterlingiana",
+      "family": "GRAPHIDACEAE",
+      "category": "EN",
+      "assessment_date": "2019-10-08",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702901/80702904",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702914,
+      "assessment_id": 80702917,
+      "scientific_name": "Lecanora masana",
+      "family": "LECANORACEAE",
+      "category": "VU",
+      "assessment_date": "2021-01-13",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/80702914/80702917",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702927,
+      "assessment_id": 80702930,
+      "scientific_name": "Lepraria lanata",
+      "family": "STEREOCAULACEAE",
+      "category": "EN",
+      "assessment_date": "2019-10-09",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80702927/80702930",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702946,
+      "assessment_id": 80702949,
+      "scientific_name": "Loxospora assateaguensis",
+      "family": "SARRAMEANACEAE",
+      "category": "CR",
+      "assessment_date": "2017-08-31",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/80702946/80702949",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702970,
+      "assessment_id": 80702977,
+      "scientific_name": "Mycoporum biseptatum",
+      "family": "MYCOPORACEAE",
+      "category": "VU",
+      "assessment_date": "2021-05-03",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/80702970/80702977",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80702989,
+      "assessment_id": 80702992,
+      "scientific_name": "Peltigera hydrothyria",
+      "family": "PELTIGERACEAE",
+      "category": "EN",
+      "assessment_date": "2023-11-30",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/80702989/80702992",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703002,
+      "assessment_id": 80703005,
+      "scientific_name": "Phaeographis oricola",
+      "family": "GRAPHIDACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80703002/80703005",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703017,
+      "assessment_id": 80703024,
+      "scientific_name": "Phaeophyscia leana",
+      "family": "PHYSCIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80703017/80703024",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703034,
+      "assessment_id": 80703037,
+      "scientific_name": "Physconia subpallida",
+      "family": "PHYSCIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80703034/80703037",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703047,
+      "assessment_id": 80703054,
+      "scientific_name": "Pilophorus fibula",
+      "family": "CLADONIACEAE",
+      "category": "EN",
+      "assessment_date": "2019-10-08",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80703047/80703054",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703064,
+      "assessment_id": 80703067,
+      "scientific_name": "Rinodina brodoana",
+      "family": "PHYSCIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-31",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/80703064/80703067",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703073,
+      "assessment_id": 80703076,
+      "scientific_name": "Rinodina chrysomelaena",
+      "family": "PHYSCIACEAE",
+      "category": "CR",
+      "assessment_date": "2015-08-13",
+      "year_published": "2018",
+      "url": "https://www.iucnredlist.org/species/80703073/80703076",
+      "population_trend": "Decreasing",
+      "countries": [
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703097,
+      "assessment_id": 80703100,
+      "scientific_name": "Sulcaria badia",
+      "family": "PARMELIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-30",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/80703097/80703100",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703106,
+      "assessment_id": 80703113,
+      "scientific_name": "Sulcaria spiralifera",
+      "family": "PARMELIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-18",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/80703106/80703113",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703121,
+      "assessment_id": 80703126,
+      "scientific_name": "Thelomma carolinianum",
+      "family": "PHYSCIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-26",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/80703121/80703126",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 97459969,
+      "assessment_id": 97462842,
+      "scientific_name": "Ramalina fragilis",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2021-02-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/97459969/97462842",
+      "population_trend": "Stable",
+      "countries": [
+        "EC"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 109418858,
+      "assessment_id": 109418873,
+      "scientific_name": "Caloplaca rinodinae-albae",
+      "family": "TELOSCHISTACEAE",
+      "category": "VU",
+      "assessment_date": "2017-08-31",
+      "year_published": "2017",
+      "url": "https://www.iucnredlist.org/species/109418858/109418873",
+      "population_trend": "Unknown",
+      "countries": [
+        "IT"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 80703140,
+      "assessment_id": 109425801,
+      "scientific_name": "Umbilicaria phaea",
+      "family": "UMBILICARIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-02-03",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/80703140/109425801",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 109425875,
+      "assessment_id": 109425892,
+      "scientific_name": "Everniastrum nepalense",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2017-08-25",
+      "year_published": "2017",
+      "url": "https://www.iucnredlist.org/species/109425875/109425892",
+      "population_trend": "Unknown",
+      "countries": [
+        "BT",
+        "CN",
+        "IN",
+        "LK",
+        "NP",
+        "RU",
+        "TH",
+        "VN"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 109425987,
+      "assessment_id": 109425994,
+      "scientific_name": "Phaeophyscia hispidula",
+      "family": "PHYSCIACEAE",
+      "category": "LC",
+      "assessment_date": "2017-08-25",
+      "year_published": "2017",
+      "url": "https://www.iucnredlist.org/species/109425987/109425994",
+      "population_trend": "Unknown",
+      "countries": [
+        "AF",
+        "AU",
+        "BO",
+        "BT",
+        "CA",
+        "CH",
+        "CN",
+        "CO",
+        "CR",
+        "EC",
+        "ES",
+        "IN",
+        "JP",
+        "KR",
+        "MX",
+        "NA",
+        "NP",
+        "NZ",
+        "PE",
+        "PG",
+        "PH",
+        "PT",
+        "RU",
+        "SD",
+        "SV",
+        "TG",
+        "TW",
+        "US",
+        "ZA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 74847931,
+      "assessment_id": 109976379,
+      "scientific_name": "Tripospora venezuelensis",
+      "family": "CORYNELIACEAE",
+      "category": "VU",
+      "assessment_date": "2017-01-27",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/74847931/109976379",
+      "population_trend": "Decreasing",
+      "countries": [
+        "VE"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 147691134,
+      "assessment_id": 147691146,
+      "scientific_name": "Ascoclavulina sakaii",
+      "family": "HELOTIACEAE",
+      "category": "NT",
+      "assessment_date": "2019-03-29",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/147691134/147691146",
+      "population_trend": "Unknown",
+      "countries": [
+        "JP",
+        "RU"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 147296771,
+      "assessment_id": 147904382,
+      "scientific_name": "Microglossum atropurpureum",
+      "family": "GEOGLOSSACEAE",
+      "category": "VU",
+      "assessment_date": "2019-03-27",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/147296771/147904382",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AT",
+        "BE",
+        "CA",
+        "CH",
+        "DE",
+        "DK",
+        "EE",
+        "ES",
+        "FI",
+        "FR",
+        "GB",
+        "IE",
+        "NL",
+        "NO",
+        "PL",
+        "SE",
+        "SI",
+        "SK",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 147440561,
+      "assessment_id": 148048893,
+      "scientific_name": "Pseudoplectania melaena",
+      "family": "SARCOSOMATACEAE",
+      "category": "NT",
+      "assessment_date": "2019-03-26",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/147440561/148048893",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AT",
+        "BA",
+        "BG",
+        "CA",
+        "CH",
+        "CN",
+        "CZ",
+        "DE",
+        "ES",
+        "FR",
+        "IT",
+        "JP",
+        "KR",
+        "MX",
+        "PL",
+        "RU",
+        "SE",
+        "SI",
+        "SK",
+        "TW",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154634653,
+      "assessment_id": 154634775,
+      "scientific_name": "Cordierites acanthophorus",
+      "family": "HELOTIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-07-24",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154634653/154634775",
+      "population_trend": "Unknown",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154635584,
+      "assessment_id": 154635630,
+      "scientific_name": "Berggrenia aurantiaca",
+      "family": "NOT ASSIGNED",
+      "category": "VU",
+      "assessment_date": "2019-07-24",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154635584/154635630",
+      "population_trend": "Decreasing",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154636537,
+      "assessment_id": 154636575,
+      "scientific_name": "Thuemenidium sp. nov. 'Australasia'",
+      "family": "GEOGLOSSACEAE",
+      "category": "DD",
+      "assessment_date": "2019-07-25",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154636537/154636575",
+      "population_trend": "Unknown",
+      "countries": [
+        "AU",
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154811245,
+      "assessment_id": 154811312,
+      "scientific_name": "Cordyceps hauturu",
+      "family": "CORDYCIPITACEAE",
+      "category": "DD",
+      "assessment_date": "2019-07-25",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154811245/154811312",
+      "population_trend": "Unknown",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154811723,
+      "assessment_id": 154811786,
+      "scientific_name": "Mitrulinia sp. nov. 'New Zealand'",
+      "family": "SCLEROTINIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-07-25",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154811723/154811786",
+      "population_trend": "Unknown",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154816078,
+      "assessment_id": 154817244,
+      "scientific_name": "Orbiliopsis callistea",
+      "family": "NOT ASSIGNED",
+      "category": "LC",
+      "assessment_date": "2019-07-25",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154816078/154817244",
+      "population_trend": "Unknown",
+      "countries": [
+        "NZ"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 154926290,
+      "assessment_id": 154926297,
+      "scientific_name": "Antrelloides atroceracea",
+      "family": "PEZIZACEAE",
+      "category": "VU",
+      "assessment_date": "2019-07-24",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154926290/154926297",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AU"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 163618381,
+      "assessment_id": 163626053,
+      "scientific_name": "Nothojafnea thaxteri",
+      "family": "PYRONEMATACEAE",
+      "category": "VU",
+      "assessment_date": "2020-03-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/163618381/163626053",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172734855,
+      "assessment_id": 172861107,
+      "scientific_name": "Aleurina echinata",
+      "family": "PYRONEMATACEAE",
+      "category": "NT",
+      "assessment_date": "2020-04-02",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172734855/172861107",
+      "population_trend": "Unknown",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172735556,
+      "assessment_id": 172861122,
+      "scientific_name": "Geomorium furciae",
+      "family": "NOT ASSIGNED",
+      "category": "DD",
+      "assessment_date": "2020-03-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172735556/172861122",
+      "population_trend": "Unknown",
+      "countries": [
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172735597,
+      "assessment_id": 172861127,
+      "scientific_name": "Geomorium gamundiae",
+      "family": "NOT ASSIGNED",
+      "category": "CR",
+      "assessment_date": "2020-04-02",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172735597/172861127",
+      "population_trend": "Stable",
+      "countries": [
+        "AR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172735667,
+      "assessment_id": 172861132,
+      "scientific_name": "Geomorium geodon",
+      "family": "NOT ASSIGNED",
+      "category": "DD",
+      "assessment_date": "2020-04-02",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172735667/172861132",
+      "population_trend": "Unknown",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172735856,
+      "assessment_id": 172861137,
+      "scientific_name": "Geomorium fuegianum",
+      "family": "NOT ASSIGNED",
+      "category": "LC",
+      "assessment_date": "2020-04-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172735856/172861137",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172740470,
+      "assessment_id": 172861187,
+      "scientific_name": "Stilbohypoxylon macrosporum",
+      "family": "XYLARIACEAE",
+      "category": "CR",
+      "assessment_date": "2020-04-02",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172740470/172861187",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172740818,
+      "assessment_id": 172861207,
+      "scientific_name": "Elaphomyces adamizans",
+      "family": "ELAPHOMYCETACEAE",
+      "category": "DD",
+      "assessment_date": "2020-04-01",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172740818/172861207",
+      "population_trend": "Unknown",
+      "countries": [
+        "GY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172740855,
+      "assessment_id": 172861212,
+      "scientific_name": "Elaphomyces compleximurus",
+      "family": "ELAPHOMYCETACEAE",
+      "category": "DD",
+      "assessment_date": "2020-04-01",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172740855/172861212",
+      "population_trend": "Unknown",
+      "countries": [
+        "GY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172740916,
+      "assessment_id": 172861217,
+      "scientific_name": "Elaphomyces digitatus",
+      "family": "ELAPHOMYCETACEAE",
+      "category": "DD",
+      "assessment_date": "2020-04-01",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172740916/172861217",
+      "population_trend": "Unknown",
+      "countries": [
+        "GY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172817937,
+      "assessment_id": 172861287,
+      "scientific_name": "Chlorovibrissea chilensis",
+      "family": "VIBRISSEACEAE",
+      "category": "EN",
+      "assessment_date": "2020-03-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172817937/172861287",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172818281,
+      "assessment_id": 172861317,
+      "scientific_name": "Rickiella edulis",
+      "family": "SARCOSCYPHACEAE",
+      "category": "EN",
+      "assessment_date": "2020-04-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172818281/172861317",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AR",
+        "BR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172832888,
+      "assessment_id": 172861387,
+      "scientific_name": "Pseudotricharina lanigera",
+      "family": "PYRONEMATACEAE",
+      "category": "VU",
+      "assessment_date": "2020-03-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172832888/172861387",
+      "population_trend": "Unknown",
+      "countries": [
+        "AR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172832924,
+      "assessment_id": 172861392,
+      "scientific_name": "Pseudotulostoma volvatum",
+      "family": "ELAPHOMYCETACEAE",
+      "category": "LC",
+      "assessment_date": "2020-04-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172832924/172861392",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO",
+        "GY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 172833061,
+      "assessment_id": 172861402,
+      "scientific_name": "Ameghiniella australis",
+      "family": "HELOTIACEAE",
+      "category": "LC",
+      "assessment_date": "2020-03-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/172833061/172861402",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "CL"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70385721,
+      "assessment_id": 175189474,
+      "scientific_name": "Arthonia kermesina",
+      "family": "ARTHONIACEAE",
+      "category": "EN",
+      "assessment_date": "2017-08-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/70385721/175189474",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 70385726,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 175708768,
+      "assessment_id": 175710642,
+      "scientific_name": "Texosporium sancti-jacobi",
+      "family": "CALICIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175708768/175710642",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175708981,
+      "assessment_id": 175710652,
+      "scientific_name": "Chaenothecopsis oregana",
+      "family": "MYCOCALICIACEAE",
+      "category": "VU",
+      "assessment_date": "2020-08-17",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175708981/175710652",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "CH",
+        "ES",
+        "SE",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175709575,
+      "assessment_id": 175710662,
+      "scientific_name": "Bryoria fremontii",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2020-08-13",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175709575/175710662",
+      "population_trend": "Unknown",
+      "countries": [
+        "CA",
+        "FI",
+        "MX",
+        "NO",
+        "RU",
+        "SE",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175709793,
+      "assessment_id": 175710677,
+      "scientific_name": "Niebla ramosissima",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2020-07-09",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175709793/175710677",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175710010,
+      "assessment_id": 175710692,
+      "scientific_name": "Seirophora aurantiaca",
+      "family": "TELOSCHISTACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-03",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175710010/175710692",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175710250,
+      "assessment_id": 175710707,
+      "scientific_name": "Sticta carolinensis",
+      "family": "LOBARIACEAE",
+      "category": "VU",
+      "assessment_date": "2020-08-01",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175710250/175710707",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175710297,
+      "assessment_id": 175710712,
+      "scientific_name": "Sticta fragilinata",
+      "family": "LOBARIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-07-15",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175710297/175710712",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175710321,
+      "assessment_id": 175710717,
+      "scientific_name": "Sticta deyana",
+      "family": "LOBARIACEAE",
+      "category": "CR",
+      "assessment_date": "2020-07-22",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/175710321/175710717",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175710398,
+      "assessment_id": 175710722,
+      "scientific_name": "Sporodophoron americanum",
+      "family": "ARTHONIACEAE",
+      "category": "EN",
+      "assessment_date": "2021-02-01",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/175710398/175710722",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 176075840,
+      "assessment_id": 176998727,
+      "scientific_name": "Immersaria fuliginosa",
+      "family": "LECIDEACEAE",
+      "category": "VU",
+      "assessment_date": "2020-06-08",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/176075840/176998727",
+      "population_trend": "Unknown",
+      "countries": [
+        "FK"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 176075275,
+      "assessment_id": 177005677,
+      "scientific_name": "Acarospora malouina",
+      "family": "ACAROSPORACEAE",
+      "category": "VU",
+      "assessment_date": "2020-06-10",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/176075275/177005677",
+      "population_trend": "Unknown",
+      "countries": [
+        "FK"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 176075451,
+      "assessment_id": 177303493,
+      "scientific_name": "Buellia gypsyensis",
+      "family": "CALICIACEAE",
+      "category": "VU",
+      "assessment_date": "2020-06-11",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/176075451/177303493",
+      "population_trend": "Unknown",
+      "countries": [
+        "FK"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 176075946,
+      "assessment_id": 177305925,
+      "scientific_name": "Lecania vermispora",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2020-06-12",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/176075946/177305925",
+      "population_trend": "Unknown",
+      "countries": [
+        "FK"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 176076887,
+      "assessment_id": 177382901,
+      "scientific_name": "Lithographa opegraphoides",
+      "family": "XYLOGRAPHACEAE",
+      "category": "VU",
+      "assessment_date": "2020-06-12",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/176076887/177382901",
+      "population_trend": "Unknown",
+      "countries": [
+        "FK"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 58514773,
+      "assessment_id": 179197748,
+      "scientific_name": "Ophiocordyceps sinensis",
+      "family": "OPHIOCORDYCIPITACEAE",
+      "category": "VU",
+      "assessment_date": "2019-10-31",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/58514773/179197748",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BT",
+        "CN",
+        "IN",
+        "NP"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 58514845,
+          "category": "VU"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 180096947,
+      "assessment_id": 180096996,
+      "scientific_name": "Flavoparmelia caperata",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2020-08-20",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/180096947/180096996",
+      "population_trend": "Increasing",
+      "countries": [
+        "AD",
+        "AR",
+        "AU",
+        "AZ",
+        "BE",
+        "BR",
+        "BY",
+        "CA",
+        "CH",
+        "CL",
+        "CN",
+        "CO",
+        "CU",
+        "DE",
+        "DO",
+        "ES",
+        "FI",
+        "FR",
+        "GB",
+        "GE",
+        "GR",
+        "HR",
+        "IE",
+        "IN",
+        "IR",
+        "IT",
+        "JP",
+        "KP",
+        "LI",
+        "LU",
+        "MX",
+        "NL",
+        "NO",
+        "NZ",
+        "PL",
+        "PR",
+        "PT",
+        "RU",
+        "SE",
+        "TR",
+        "TW",
+        "US",
+        "UY",
+        "VE",
+        "ZA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180096952,
+      "assessment_id": 180097001,
+      "scientific_name": "Lecanora protervula",
+      "family": "LECANORACEAE",
+      "category": "LC",
+      "assessment_date": "2022-04-17",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/180096952/180097001",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180096955,
+      "assessment_id": 180097006,
+      "scientific_name": "Lepraria normandinoides",
+      "family": "STEREOCAULACEAE",
+      "category": "LC",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/180096955/180097006",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180096958,
+      "assessment_id": 180097011,
+      "scientific_name": "Lepraria oxybapha",
+      "family": "STEREOCAULACEAE",
+      "category": "LC",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/180096958/180097011",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180096965,
+      "assessment_id": 180097016,
+      "scientific_name": "Phlyctis petraea",
+      "family": "PHLYCTIDACEAE",
+      "category": "LC",
+      "assessment_date": "2022-04-18",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/180096965/180097016",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180150537,
+      "assessment_id": 180157387,
+      "scientific_name": "Lecidea mayeri",
+      "family": "LECIDEACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180150537/180157387",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149902,
+      "assessment_id": 180157494,
+      "scientific_name": "Leptogium inversum",
+      "family": "COLLEMATACEAE",
+      "category": "VU",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149902/180157494",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149333,
+      "assessment_id": 180157742,
+      "scientific_name": "Hypotrachyna neoscytodes",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149333/180157742",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148753,
+      "assessment_id": 180158099,
+      "scientific_name": "Lobariella soredians",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148753/180158099",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148672,
+      "assessment_id": 180158587,
+      "scientific_name": "Lobariella isidiata",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148672/180158587",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148659,
+      "assessment_id": 180158703,
+      "scientific_name": "Lobariella flavomedullosa",
+      "family": "LOBARIACEAE",
+      "category": "VU",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148659/180158703",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148009,
+      "assessment_id": 180159079,
+      "scientific_name": "Sticta lenormandii",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148009/180159079",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147808,
+      "assessment_id": 180159206,
+      "scientific_name": "Sticta laevis",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147808/180159206",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147793,
+      "assessment_id": 180159327,
+      "scientific_name": "Sticta isidiokunthii",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147793/180159327",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147622,
+      "assessment_id": 180159448,
+      "scientific_name": "Sticta impressula",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147622/180159448",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147489,
+      "assessment_id": 180159572,
+      "scientific_name": "Sticta granatensis",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147489/180159572",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147465,
+      "assessment_id": 180159699,
+      "scientific_name": "Sticta cordillerana",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147465/180159699",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147390,
+      "assessment_id": 180159823,
+      "scientific_name": "Sticta arachnofuliginosa",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147390/180159823",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147261,
+      "assessment_id": 180159947,
+      "scientific_name": "Sticta andreana",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147261/180159947",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180146600,
+      "assessment_id": 180160068,
+      "scientific_name": "Phaeographis decolorascens",
+      "family": "GRAPHIDACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180146600/180160068",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142454,
+      "assessment_id": 180161997,
+      "scientific_name": "Byssoloma permutans",
+      "family": "BYSSOLOMATACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142454/180161997",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142209,
+      "assessment_id": 180162115,
+      "scientific_name": "Arthonia obscurella",
+      "family": "ARTHONIACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142209/180162115",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148257,
+      "assessment_id": 180162477,
+      "scientific_name": "Sticta rhizinata",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148257/180162477",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149343,
+      "assessment_id": 180162734,
+      "scientific_name": "Hypotrachyna paraphyscioides",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149343/180162734",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180146816,
+      "assessment_id": 180162844,
+      "scientific_name": "Gyalideopsis chicaque",
+      "family": "GOMPHILLACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180146816/180162844",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142850,
+      "assessment_id": 180163208,
+      "scientific_name": "Chiodecton subordinatum",
+      "family": "ROCCELLACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142850/180163208",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149808,
+      "assessment_id": 180163556,
+      "scientific_name": "Bacidia proposita",
+      "family": "RAMALINACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149808/180163556",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149486,
+      "assessment_id": 180163677,
+      "scientific_name": "Architrypethelium columbianum",
+      "family": "TRYPETHELIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149486/180163677",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142998,
+      "assessment_id": 180164612,
+      "scientific_name": "Lecanactis proximans",
+      "family": "ROCCELLACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142998/180164612",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180150775,
+      "assessment_id": 180164733,
+      "scientific_name": "Lepra acroscyphoides",
+      "family": "PERTUSARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180150775/180164733",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149441,
+      "assessment_id": 180164845,
+      "scientific_name": "Pertusaria rhodostoma",
+      "family": "PERTUSARIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149441/180164845",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149612,
+      "assessment_id": 180165077,
+      "scientific_name": "Pyrenula pleiomera",
+      "family": "PYRENULACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149612/180165077",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148385,
+      "assessment_id": 180165302,
+      "scientific_name": "Sticta subscrobiculata",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148385/180165302",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142219,
+      "assessment_id": 180165777,
+      "scientific_name": "Arthonia septemlocularis",
+      "family": "ARTHONIACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142219/180165777",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180150487,
+      "assessment_id": 180165895,
+      "scientific_name": "Bapalmuia araracuarensis",
+      "family": "BYSSOLOMATACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180150487/180165895",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149784,
+      "assessment_id": 180166013,
+      "scientific_name": "Buellia subjuncta",
+      "family": "CALICIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149784/180166013",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180146639,
+      "assessment_id": 180166118,
+      "scientific_name": "Graphis internigricans",
+      "family": "GRAPHIDACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180146639/180166118",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148682,
+      "assessment_id": 180166221,
+      "scientific_name": "Lobariella olivascens",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148682/180166221",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148763,
+      "assessment_id": 180166339,
+      "scientific_name": "Lobariella subcorallophora",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148763/180166339",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148415,
+      "assessment_id": 180166810,
+      "scientific_name": "Sticta tunjensis",
+      "family": "LOBARIACEAE",
+      "category": "VU",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148415/180166810",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148199,
+      "assessment_id": 180167178,
+      "scientific_name": "Sticta minutula",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148199/180167178",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148143,
+      "assessment_id": 180167305,
+      "scientific_name": "Sticta macrocyphellata",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148143/180167305",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180147522,
+      "assessment_id": 180167426,
+      "scientific_name": "Sticta hirsutifuliginosa",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180147522/180167426",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180143141,
+      "assessment_id": 180167550,
+      "scientific_name": "Schismatomma leucopsarum",
+      "family": "ROCCELLACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180143141/180167550",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148747,
+      "assessment_id": 180167665,
+      "scientific_name": "Lobariella sipmanii",
+      "family": "LOBARIACEAE",
+      "category": "LC",
+      "assessment_date": "2023-01-19",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148747/180167665",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO",
+        "EC"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142742,
+      "assessment_id": 180168240,
+      "scientific_name": "Chiodecton inconspicuum",
+      "family": "ROCCELLACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142742/180168240",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180149539,
+      "assessment_id": 180168343,
+      "scientific_name": "Astrothelium phaeothelium",
+      "family": "TRYPETHELIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180149539/180168343",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142378,
+      "assessment_id": 180168448,
+      "scientific_name": "Ancistrosporella leucophila",
+      "family": "ROCCELLACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142378/180168448",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142319,
+      "assessment_id": 180168563,
+      "scientific_name": "Allophoron farinosum",
+      "family": "NOT ASSIGNED",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142319/180168563",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180148587,
+      "assessment_id": 180169165,
+      "scientific_name": "Lobariella angustata",
+      "family": "LOBARIACEAE",
+      "category": "VU",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180148587/180169165",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180142187,
+      "assessment_id": 180169525,
+      "scientific_name": "Arthonia ambiguella",
+      "family": "ARTHONIACEAE",
+      "category": "DD",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180142187/180169525",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180150643,
+      "assessment_id": 180169869,
+      "scientific_name": "Platythecium serpentinellum",
+      "family": "GRAPHIDACEAE",
+      "category": "CR",
+      "assessment_date": "2019-11-26",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/180150643/180169869",
+      "population_trend": "Unknown",
+      "countries": [
+        "CO"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 71597387,
+      "assessment_id": 180457322,
+      "scientific_name": "Hypotrachyna virginica",
+      "family": "PARMELIACEAE",
+      "category": "CR",
+      "assessment_date": "2019-09-27",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/71597387/180457322",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 71597454,
+          "category": "CR"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 180875146,
+      "assessment_id": 180875189,
+      "scientific_name": "Lepra andersoniae",
+      "family": "PERTUSARIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-06",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/180875146/180875189",
+      "population_trend": "Stable",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 183335302,
+      "assessment_id": 183335414,
+      "scientific_name": "Cladonia submitis",
+      "family": "CLADONIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-08-30",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/183335302/183335414",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 180412795,
+      "assessment_id": 184974492,
+      "scientific_name": "Calicium sequoiae",
+      "family": "CALICIACEAE",
+      "category": "EN",
+      "assessment_date": "2021-05-05",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/180412795/184974492",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 95383414,
+      "assessment_id": 185679467,
+      "scientific_name": "Biscogniauxia bartholomaei",
+      "family": "XYLARIACEAE",
+      "category": "DD",
+      "assessment_date": "2016-04-28",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/95383414/185679467",
+      "population_trend": "Unknown",
+      "countries": [
+        "CA",
+        "RU",
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2017",
+          "assessment_id": 95385394,
+          "category": "DD"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 80188449,
+      "assessment_id": 185681031,
+      "scientific_name": "Hypocreopsis amplectens",
+      "family": "HYPOCREACEAE",
+      "category": "CR",
+      "assessment_date": "2019-07-26",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/80188449/185681031",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AU",
+        "NZ"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 80188453,
+          "category": "CR"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 58517228,
+      "assessment_id": 185715679,
+      "scientific_name": "Poronia punctata",
+      "family": "XYLARIACEAE",
+      "category": "LC",
+      "assessment_date": "2019-03-29",
+      "year_published": "2020",
+      "url": "https://www.iucnredlist.org/species/58517228/185715679",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AR",
+        "AT",
+        "AZ",
+        "BE",
+        "CH",
+        "CN",
+        "CR",
+        "CZ",
+        "DE",
+        "DK",
+        "EC",
+        "EE",
+        "ES",
+        "FR",
+        "GB",
+        "GE",
+        "GR",
+        "HR",
+        "HU",
+        "IN",
+        "IT",
+        "KG",
+        "KZ",
+        "LV",
+        "MK",
+        "MN",
+        "MX",
+        "NL",
+        "PK",
+        "RO",
+        "RU",
+        "SE",
+        "SK",
+        "UA",
+        "US",
+        "UZ",
+        "VE",
+        "ZA"
+      ],
+      "assessment_count": 3,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 167284271,
+          "category": "LC"
+        },
+        {
+          "year": "2019",
+          "assessment_id": 58517248,
+          "category": "LC"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 154440031,
+      "assessment_id": 185718313,
+      "scientific_name": "Cyttaria septentrionalis",
+      "family": "CYTTARIACEAE",
+      "category": "VU",
+      "assessment_date": "2019-07-24",
+      "year_published": "2019",
+      "url": "https://www.iucnredlist.org/species/154440031/185718313",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AU"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 154440075,
+          "category": "VU"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 194660207,
+      "assessment_id": 194678104,
+      "scientific_name": "Alectoria fallacina",
+      "family": "PARMELIACEAE",
+      "category": "EN",
+      "assessment_date": "2022-05-03",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/194660207/194678104",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660286,
+      "assessment_id": 194678109,
+      "scientific_name": "Bryoria salazinica",
+      "family": "PARMELIACEAE",
+      "category": "CR",
+      "assessment_date": "2021-01-27",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660286/194678109",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660372,
+      "assessment_id": 194678114,
+      "scientific_name": "Bulbothrix confoederata",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-02-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660372/194678114",
+      "population_trend": "Unknown",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660573,
+      "assessment_id": 194678129,
+      "scientific_name": "Parmelia saxatilis",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-18",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660573/194678129",
+      "population_trend": "Stable",
+      "countries": [
+        "AD",
+        "AL",
+        "AQ",
+        "AR",
+        "AT",
+        "BA",
+        "BE",
+        "BY",
+        "CH",
+        "CL",
+        "CZ",
+        "DE",
+        "DK",
+        "EE",
+        "ES",
+        "FI",
+        "FK",
+        "FO",
+        "FR",
+        "GB",
+        "GL",
+        "GR",
+        "GS",
+        "HU",
+        "IE",
+        "IM",
+        "IS",
+        "IT",
+        "LT",
+        "LU",
+        "LV",
+        "ME",
+        "NL",
+        "NO",
+        "NZ",
+        "PL",
+        "PT",
+        "RO",
+        "RS",
+        "RU",
+        "SE",
+        "SJ",
+        "SK",
+        "TF",
+        "TR",
+        "UA",
+        "US",
+        "ZA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660642,
+      "assessment_id": 194678134,
+      "scientific_name": "Parmelia squarrosa",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-25",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660642/194678134",
+      "population_trend": "Stable",
+      "countries": [
+        "AM",
+        "AT",
+        "AZ",
+        "BA",
+        "BG",
+        "CA",
+        "CH",
+        "CN",
+        "CZ",
+        "GE",
+        "HR",
+        "HU",
+        "IN",
+        "JP",
+        "KP",
+        "KR",
+        "NP",
+        "RS",
+        "RU",
+        "SI",
+        "TR",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660719,
+      "assessment_id": 194678139,
+      "scientific_name": "Parmeliopsis ambigua",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-25",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660719/194678139",
+      "population_trend": "Stable",
+      "countries": [
+        "AD",
+        "AT",
+        "AU",
+        "BA",
+        "BE",
+        "BG",
+        "BY",
+        "CA",
+        "CH",
+        "CY",
+        "CZ",
+        "DE",
+        "DK",
+        "EE",
+        "ES",
+        "FI",
+        "FO",
+        "FR",
+        "GB",
+        "GL",
+        "GR",
+        "HR",
+        "HU",
+        "IE",
+        "IM",
+        "IN",
+        "IS",
+        "IT",
+        "JP",
+        "LT",
+        "LU",
+        "LV",
+        "MA",
+        "ME",
+        "MX",
+        "NL",
+        "NO",
+        "PA",
+        "PL",
+        "PT",
+        "RO",
+        "RS",
+        "RU",
+        "SE",
+        "SI",
+        "SJ",
+        "SK",
+        "TH",
+        "TR",
+        "TW",
+        "UA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194660868,
+      "assessment_id": 194678144,
+      "scientific_name": "Parmeliopsis hyperopta",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-31",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194660868/194678144",
+      "population_trend": "Stable",
+      "countries": [
+        "AD",
+        "AR",
+        "AT",
+        "AU",
+        "BG",
+        "BY",
+        "CA",
+        "CH",
+        "CL",
+        "CZ",
+        "DE",
+        "DK",
+        "EE",
+        "ES",
+        "FI",
+        "FO",
+        "FR",
+        "GB",
+        "GL",
+        "GR",
+        "IE",
+        "IS",
+        "IT",
+        "LT",
+        "LV",
+        "ME",
+        "MN",
+        "MX",
+        "NL",
+        "NO",
+        "PL",
+        "RO",
+        "RS",
+        "RU",
+        "SE",
+        "SI",
+        "SJ",
+        "SK",
+        "TR",
+        "UA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194661476,
+      "assessment_id": 194678149,
+      "scientific_name": "Parmotrema crinitum",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-25",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194661476/194678149",
+      "population_trend": "Stable",
+      "countries": [
+        "AG",
+        "AI",
+        "AR",
+        "AT",
+        "AW",
+        "BB",
+        "BL",
+        "BM",
+        "BO",
+        "BQ",
+        "BR",
+        "BS",
+        "BZ",
+        "CH",
+        "CN",
+        "CO",
+        "CR",
+        "CU",
+        "CW",
+        "CZ",
+        "DE",
+        "DM",
+        "DO",
+        "EC",
+        "ES",
+        "ET",
+        "FO",
+        "FR",
+        "GB",
+        "GD",
+        "GP",
+        "GR",
+        "GT",
+        "HN",
+        "HT",
+        "HU",
+        "IE",
+        "IN",
+        "IT",
+        "JM",
+        "JP",
+        "KE",
+        "KN",
+        "KR",
+        "KY",
+        "LC",
+        "LK",
+        "MA",
+        "MF",
+        "MG",
+        "MQ",
+        "MS",
+        "MX",
+        "NI",
+        "NO",
+        "PA",
+        "PE",
+        "PH",
+        "PL",
+        "PR",
+        "PT",
+        "PY",
+        "RO",
+        "RW",
+        "SI",
+        "SK",
+        "SV",
+        "SX",
+        "TC",
+        "TR",
+        "TT",
+        "TZ",
+        "UA",
+        "UG",
+        "UY",
+        "VC",
+        "VE",
+        "VG",
+        "VI",
+        "YE",
+        "ZA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194661553,
+      "assessment_id": 194678154,
+      "scientific_name": "Parmotrema hypotropum",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194661553/194678154",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194661584,
+      "assessment_id": 194678159,
+      "scientific_name": "Parmotrema perforatum",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-31",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194661584/194678159",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662148,
+      "assessment_id": 194678174,
+      "scientific_name": "Punctelia caseana",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-02-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194662148/194678174",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662185,
+      "assessment_id": 194678184,
+      "scientific_name": "Rhizoplaca idahoensis",
+      "family": "LECANORACEAE",
+      "category": "EN",
+      "assessment_date": "2021-04-21",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194662185/194678184",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662208,
+      "assessment_id": 194678189,
+      "scientific_name": "Canoparmelia caroliniana",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-02-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194662208/194678189",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "BO",
+        "BR",
+        "CO",
+        "CR",
+        "CU",
+        "EC",
+        "ES",
+        "GY",
+        "HN",
+        "HT",
+        "JM",
+        "KE",
+        "MX",
+        "PT",
+        "PY",
+        "SV",
+        "TZ",
+        "US",
+        "UY",
+        "VE"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662214,
+      "assessment_id": 194678194,
+      "scientific_name": "Flavoparmelia baltimorensis",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194662214/194678194",
+      "population_trend": "Stable",
+      "countries": [
+        "AR",
+        "BR",
+        "CA",
+        "CL",
+        "MX",
+        "US",
+        "UY",
+        "VE"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662493,
+      "assessment_id": 194678204,
+      "scientific_name": "Melanohalea halei",
+      "family": "PARMELIACEAE",
+      "category": "LC",
+      "assessment_date": "2021-05-10",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194662493/194678204",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194663043,
+      "assessment_id": 194678239,
+      "scientific_name": "Leptogium hibernicum",
+      "family": "COLLEMATACEAE",
+      "category": "EN",
+      "assessment_date": "2021-05-20",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/194663043/194678239",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CA",
+        "ES",
+        "FR",
+        "GB",
+        "GR",
+        "IE",
+        "NO",
+        "PT",
+        "RU",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 195432681,
+      "assessment_id": 195432683,
+      "scientific_name": "Hypotrachyna riparia",
+      "family": "PARMELIACEAE",
+      "category": "VU",
+      "assessment_date": "2021-02-03",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/195432681/195432683",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 198480554,
+      "assessment_id": 198487201,
+      "scientific_name": "Otidea smithii",
+      "family": "PYRONEMATACEAE",
+      "category": "LC",
+      "assessment_date": "2024-12-15",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/198480554/198487201",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 198481380,
+      "assessment_id": 198487264,
+      "scientific_name": "Pachycudonia spathulata",
+      "family": "CUDONIACEAE",
+      "category": "LC",
+      "assessment_date": "2024-12-15",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/198481380/198487264",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 175709748,
+      "assessment_id": 200461142,
+      "scientific_name": "Mobergia calculiformis",
+      "family": "PHYSCIACEAE",
+      "category": "EN",
+      "assessment_date": "2020-07-01",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/175709748/200461142",
+      "population_trend": "Decreasing",
+      "countries": [
+        "MX"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 175710672,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 175710031,
+      "assessment_id": 200461575,
+      "scientific_name": "Teloschistes peruensis",
+      "family": "TELOSCHISTACEAE",
+      "category": "CR",
+      "assessment_date": "2020-08-13",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/175710031/200461575",
+      "population_trend": "Decreasing",
+      "countries": [
+        "CL",
+        "PE"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 175710697,
+          "category": "CR"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 147297001,
+      "assessment_id": 205024029,
+      "scientific_name": "Geoglossum difforme",
+      "family": "GEOGLOSSACEAE",
+      "category": "NT",
+      "assessment_date": "2019-03-27",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/147297001/205024029",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BE",
+        "CA",
+        "DE",
+        "DK",
+        "EE",
+        "FR",
+        "GB",
+        "NL",
+        "NO",
+        "RU",
+        "SE",
+        "US"
+      ],
+      "assessment_count": 4,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 147906654,
+          "category": "NT"
+        },
+        {
+          "year": "2019",
+          "assessment_id": 148464802,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 147297001,
+      "assessment_id": 205024253,
+      "scientific_name": "Geoglossum difforme",
+      "family": "GEOGLOSSACEAE",
+      "category": "EN",
+      "assessment_date": "2019-03-27",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/147297001/205024253",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BE",
+        "DE",
+        "DK",
+        "EE",
+        "FR",
+        "GB",
+        "NL",
+        "NO",
+        "RU",
+        "SE"
+      ],
+      "assessment_count": 4,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 147906654,
+          "category": "NT"
+        },
+        {
+          "year": "2019",
+          "assessment_id": 148464802,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 64081145,
+      "assessment_id": 205629065,
+      "scientific_name": "Anzia centrifuga",
+      "family": "PARMELIACEAE",
+      "category": "EN",
+      "assessment_date": "2021-07-26",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/64081145/205629065",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2014",
+          "assessment_id": 64081186,
+          "category": "VU"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 209595557,
+      "assessment_id": 209597943,
+      "scientific_name": "Ophiocordyceps ainictos",
+      "family": "OPHIOCORDYCIPITACEAE",
+      "category": "DD",
+      "assessment_date": "2021-10-20",
+      "year_published": "2021",
+      "url": "https://www.iucnredlist.org/species/209595557/209597943",
+      "population_trend": "Unknown",
+      "countries": [
+        "BR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 209742938,
+      "assessment_id": 210566572,
+      "scientific_name": "Parmotrema bifidum",
+      "family": "PARMELIACEAE",
+      "category": "CR",
+      "assessment_date": "2021-11-15",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/209742938/210566572",
+      "population_trend": "Unknown",
+      "countries": [],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 209742965,
+      "assessment_id": 210566580,
+      "scientific_name": "Parmotrema pachydermum",
+      "family": "PARMELIACEAE",
+      "category": "CR",
+      "assessment_date": "2022-04-17",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/209742965/210566580",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BR",
+        "UY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194674651,
+      "assessment_id": 213314933,
+      "scientific_name": "Trapeliopsis bisorediata",
+      "family": "TRAPELIACEAE",
+      "category": "EN",
+      "assessment_date": "2022-01-12",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/194674651/213314933",
+      "population_trend": "Unknown",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 194662559,
+      "assessment_id": 213315050,
+      "scientific_name": "Xylopsora canopeorum",
+      "family": "UMBILICARIACEAE",
+      "category": "EN",
+      "assessment_date": "2021-08-01",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/194662559/213315050",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 213314289,
+      "assessment_id": 213315130,
+      "scientific_name": "Ramalina menziesii",
+      "family": "RAMALINACEAE",
+      "category": "LC",
+      "assessment_date": "2021-12-20",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/213314289/213315130",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "MX",
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 70380974,
+      "assessment_id": 213346631,
+      "scientific_name": "Ramalina portosantana",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2022-02-11",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70380974/213346631",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 3,
+      "previous_assessments": [
+        {
+          "year": "2020",
+          "assessment_id": 175190113,
+          "category": "CR"
+        },
+        {
+          "year": "2019",
+          "assessment_id": 70380980,
+          "category": "CR"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 70381370,
+      "assessment_id": 213346957,
+      "scientific_name": "Ramalina confertula",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2022-06-01",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70381370/213346957",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2018",
+          "assessment_id": 70381417,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 70382699,
+      "assessment_id": 213347134,
+      "scientific_name": "Ramalina erosa",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2023-02-02",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70382699/213347134",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2015",
+          "assessment_id": 70382708,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 70384543,
+      "assessment_id": 213347329,
+      "scientific_name": "Ramalina timdaliana",
+      "family": "RAMALINACEAE",
+      "category": "VU",
+      "assessment_date": "2022-02-11",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/70384543/213347329",
+      "population_trend": "Unknown",
+      "countries": [
+        "PT"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2017",
+          "assessment_id": 70384546,
+          "category": "EN"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 180096939,
+      "assessment_id": 219189896,
+      "scientific_name": "Bacidia schweinitzii",
+      "family": "RAMALINACEAE",
+      "category": "LC",
+      "assessment_date": "2022-04-17",
+      "year_published": "2022",
+      "url": "https://www.iucnredlist.org/species/180096939/219189896",
+      "population_trend": "Stable",
+      "countries": [
+        "CA",
+        "KR",
+        "RU",
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2022",
+          "assessment_id": 180096991,
+          "category": "LC"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 228795876,
+      "assessment_id": 228797830,
+      "scientific_name": "Genea cephalonicae",
+      "family": "PYRONEMATACEAE",
+      "category": "DD",
+      "assessment_date": "2023-07-05",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/228795876/228797830",
+      "population_trend": "Stable",
+      "countries": [
+        "GR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 228795429,
+      "assessment_id": 228797835,
+      "scientific_name": "Balsamia hellenica",
+      "family": "HELVELLACEAE",
+      "category": "DD",
+      "assessment_date": "2023-07-03",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/228795429/228797835",
+      "population_trend": "Stable",
+      "countries": [
+        "GR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 238219528,
+      "assessment_id": 246019248,
+      "scientific_name": "Capronia capucina",
+      "family": "HERPOTRICHIELLACEAE",
+      "category": "DD",
+      "assessment_date": "2022-12-16",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/238219528/246019248",
+      "population_trend": "Unknown",
+      "countries": [
+        "AR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 238220937,
+      "assessment_id": 246019519,
+      "scientific_name": "Bartalinia mellea",
+      "family": "BARTALINIACEAE",
+      "category": "DD",
+      "assessment_date": "2023-06-13",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/238220937/246019519",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 238222141,
+      "assessment_id": 246019952,
+      "scientific_name": "Hypocreodendron sanguineum",
+      "family": "XYLARIACEAE",
+      "category": "DD",
+      "assessment_date": "2023-06-19",
+      "year_published": "2023",
+      "url": "https://www.iucnredlist.org/species/238222141/246019952",
+      "population_trend": "Unknown",
+      "countries": [
+        "AR",
+        "BR",
+        "GT",
+        "MX",
+        "UY"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 75118940,
+      "assessment_id": 265038281,
+      "scientific_name": "Gyromitra sphaerospora",
+      "family": "DISCINACEAE",
+      "category": "NT",
+      "assessment_date": "2019-03-29",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/75118940/265038281",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AT",
+        "CA",
+        "CH",
+        "CN",
+        "CZ",
+        "DE",
+        "EE",
+        "FI",
+        "FR",
+        "GE",
+        "HR",
+        "IN",
+        "JP",
+        "KZ",
+        "LT",
+        "NO",
+        "PL",
+        "RU",
+        "SE",
+        "SK",
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 75118943,
+          "category": "NT"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 113197460,
+      "assessment_id": 265038877,
+      "scientific_name": "Trichoglossum sp. nov. 'c.f. walteri'",
+      "family": "GEOGLOSSACEAE",
+      "category": "VU",
+      "assessment_date": "2019-03-27",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/113197460/265038877",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AT",
+        "BE",
+        "CA",
+        "CH",
+        "DE",
+        "DK",
+        "EE",
+        "FI",
+        "FR",
+        "GB",
+        "IE",
+        "NL",
+        "NO",
+        "RU",
+        "SE",
+        "SK",
+        "US"
+      ],
+      "assessment_count": 2,
+      "previous_assessments": [
+        {
+          "year": "2019",
+          "assessment_id": 113197543,
+          "category": "VU"
+        }
+      ]
+    },
+    {
+      "sis_taxon_id": 266357751,
+      "assessment_id": 266357807,
+      "scientific_name": "Xylaria nigromedullosa",
+      "family": "XYLARIACEAE",
+      "category": "DD",
+      "assessment_date": "2024-02-26",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/266357751/266357807",
+      "population_trend": "Unknown",
+      "countries": [
+        "BR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 266357535,
+      "assessment_id": 266361555,
+      "scientific_name": "Thamnomyces chamissonis",
+      "family": "HYPOXYLACEAE",
+      "category": "NT",
+      "assessment_date": "2024-02-21",
+      "year_published": "2024",
+      "url": "https://www.iucnredlist.org/species/266357535/266361555",
+      "population_trend": "Decreasing",
+      "countries": [
+        "BR"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 273188747,
+      "assessment_id": 273188856,
+      "scientific_name": "Hypoxylon vogesiacum",
+      "family": "HYPOXYLACEAE",
+      "category": "NT",
+      "assessment_date": "2024-12-10",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/273188747/273188856",
+      "population_trend": "Decreasing",
+      "countries": [
+        "AT",
+        "CH",
+        "CZ",
+        "DE",
+        "ES",
+        "FI",
+        "FR",
+        "LV",
+        "NO",
+        "RU",
+        "SE",
+        "SK",
+        "UA"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 273188403,
+      "assessment_id": 273188861,
+      "scientific_name": "Balsamia nigrans",
+      "family": "HELVELLACEAE",
+      "category": "VU",
+      "assessment_date": "2024-12-28",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/273188403/273188861",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    },
+    {
+      "sis_taxon_id": 273188534,
+      "assessment_id": 273188866,
+      "scientific_name": "Choiromyces alveolatus",
+      "family": "TUBERACEAE",
+      "category": "LC",
+      "assessment_date": "2024-12-15",
+      "year_published": "2025",
+      "url": "https://www.iucnredlist.org/species/273188534/273188866",
+      "population_trend": "Decreasing",
+      "countries": [
+        "US"
+      ],
+      "assessment_count": 1,
+      "previous_assessments": []
+    }
+  ],
+  "metadata": {
+    "totalSpecies": 194,
+    "fetchedAt": "2025-12-09T06:59:09.256Z",
+    "pagesProcessed": 2,
+    "lastPage": 4,
+    "byCategory": {
+      "EN": 38,
+      "CR": 27,
+      "NT": 10,
+      "DD": 28,
+      "LC": 55,
+      "VU": 36
+    },
+    "complete": true,
+    "taxonId": "fungi"
+  }
+}
