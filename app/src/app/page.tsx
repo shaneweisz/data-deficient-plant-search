@@ -31,7 +31,7 @@ export default function RedListPage() {
               IUCN Red List Dashboard
             </h1>
             <p className="text-zinc-600 dark:text-zinc-400">
-              Assessment statistics by taxon
+              Select a taxon for a detailed breakdown
             </p>
           </div>
           <div className="flex items-center gap-2">
