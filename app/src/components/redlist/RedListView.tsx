@@ -86,6 +86,9 @@ interface LatestInatObservation {
   url: string;
   date: string | null;
   count: number;
+  imageUrl: string | null;
+  location: string | null;
+  observer: string | null;
 }
 
 interface SpeciesDetails {
@@ -776,20 +779,20 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                   onClick={() => handleSort("year")}
                 >
                   <span className="flex items-center gap-1">
-                    Assessed
+                    Assessment Date
                     {sortField === "year" && (
                       <span className="text-red-500">{sortDirection === "desc" ? "↓" : "↑"}</span>
                     )}
                   </span>
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  Published
+                  Published Year
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Previous Assessments
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  GBIF Occurrences All
+                  GBIF Occurrences
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   GBIF Occurrences Since Assessed
@@ -821,11 +824,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2 py-0.5 text-xs font-medium rounded hover:ring-2 hover:ring-red-400"
+                      <span
+                        className="px-2 py-0.5 text-xs font-medium rounded"
                         style={{
                           backgroundColor: CATEGORY_COLORS[s.category] + "20",
                           color: s.category === "EX" || s.category === "EW" ? "#fff" : CATEGORY_COLORS[s.category],
@@ -833,19 +833,10 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         }}
                       >
                         {s.category}
-                      </a>
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-xs">
-                      {details?.criteria ? (
-                        <a
-                          href={s.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-red-500 hover:underline"
-                        >
-                          {details.criteria}
-                        </a>
-                      ) : "—"}
+                      {details?.criteria || "—"}
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       <a
@@ -867,14 +858,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                       )}
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-red-500 hover:underline"
-                      >
-                        {s.year_published}
-                      </a>
+                      {s.year_published}
                     </td>
                     <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400 text-sm">
                       {s.previous_assessments.length > 0
@@ -912,7 +896,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         details.gbifOccurrences.toLocaleString()
                       ) : "—"}
                       {details?.gbifByRecordType && details.gbifOccurrences != null && (
-                        <div className="absolute right-0 top-full mt-1 z-10 hidden group-hover/gbif:block bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
+                        <div className="absolute right-0 top-full z-10 hidden group-hover/gbif:block pt-1">
+                        <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
                           <div className="text-zinc-300 font-medium mb-1">Breakdown by type:</div>
                           <div className="space-y-0.5 text-zinc-400">
                             <div className="flex justify-between">
@@ -929,7 +914,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             </div>
                             {details.latestInatObservation && details.latestInatObservation.count > 0 && (
                               <div className="flex justify-between pl-3 text-[11px]">
-                                <span>
+                                <span className="relative group/inat">
                                   iNaturalist{" "}
                                   <a
                                     href={details.latestInatObservation.url}
@@ -940,6 +925,26 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                                   >
                                     (latest observation)
                                   </a>
+                                  {details.latestInatObservation.imageUrl && (
+                                    <div className="absolute right-0 bottom-full mb-2 z-20 hidden group-hover/inat:block bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-2 min-w-[220px]">
+                                      <img
+                                        src={details.latestInatObservation.imageUrl.replace('/original.', '/medium.')}
+                                        alt="Latest iNaturalist observation"
+                                        className="w-52 h-auto rounded mb-2"
+                                      />
+                                      <div className="text-[10px] text-zinc-300 space-y-0.5">
+                                        {details.latestInatObservation.date && (
+                                          <div>{details.latestInatObservation.date}</div>
+                                        )}
+                                        {details.latestInatObservation.observer && (
+                                          <div className="truncate">{details.latestInatObservation.observer}</div>
+                                        )}
+                                        {details.latestInatObservation.location && (
+                                          <div className="truncate text-zinc-400">{details.latestInatObservation.location}</div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
                                 </span>
                                 <a
                                   href={`https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}`}
@@ -984,6 +989,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             )}
                           </div>
                         </div>
+                        </div>
                       )}
                     </td>
                     <td
@@ -1005,7 +1011,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         details.gbifOccurrencesSinceAssessment.toLocaleString()
                       ) : "—"}
                       {details?.gbifNewByRecordType && details.gbifOccurrencesSinceAssessment != null && assessmentYear && (
-                        <div className="absolute right-0 top-full mt-1 z-10 hidden group-hover/newgbif:block bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
+                        <div className="absolute right-0 top-full z-10 hidden group-hover/newgbif:block pt-1">
+                        <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
                           <div className="text-zinc-300 font-medium mb-1">After {assessmentYear}:</div>
                           <div className="space-y-0.5 text-zinc-400">
                             <div className="flex justify-between">
@@ -1022,7 +1029,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             </div>
                             {details.gbifNewByRecordType.iNaturalist != null && details.gbifNewByRecordType.iNaturalist > 0 && (
                               <div className="flex justify-between pl-3 text-[11px]">
-                                <span>
+                                <span className="relative group/inat2">
                                   iNaturalist{" "}
                                   {details.latestInatObservation && (
                                     <a
@@ -1034,6 +1041,26 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                                     >
                                       (latest observation)
                                     </a>
+                                  )}
+                                  {details.latestInatObservation?.imageUrl && (
+                                    <div className="absolute right-0 bottom-full mb-2 z-20 hidden group-hover/inat2:block bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl p-2 min-w-[220px]">
+                                      <img
+                                        src={details.latestInatObservation.imageUrl.replace('/original.', '/medium.')}
+                                        alt="Latest iNaturalist observation"
+                                        className="w-52 h-auto rounded mb-2"
+                                      />
+                                      <div className="text-[10px] text-zinc-300 space-y-0.5">
+                                        {details.latestInatObservation.date && (
+                                          <div>{details.latestInatObservation.date}</div>
+                                        )}
+                                        {details.latestInatObservation.observer && (
+                                          <div className="truncate">{details.latestInatObservation.observer}</div>
+                                        )}
+                                        {details.latestInatObservation.location && (
+                                          <div className="truncate text-zinc-400">{details.latestInatObservation.location}</div>
+                                        )}
+                                      </div>
+                                    </div>
                                   )}
                                 </span>
                                 <a
@@ -1078,6 +1105,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                               </div>
                             )}
                           </div>
+                        </div>
                         </div>
                       )}
                     </td>

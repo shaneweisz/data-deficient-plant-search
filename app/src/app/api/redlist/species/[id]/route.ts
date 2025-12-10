@@ -99,7 +99,7 @@ export async function GET(
     let gbifOccurrencesSinceAssessment: number | null = null;
     let gbifByRecordType: { humanObservation: number; preservedSpecimen: number; machineObservation: number; other: number } | null = null;
     let gbifNewByRecordType: { humanObservation: number; preservedSpecimen: number; machineObservation: number; other: number; iNaturalist: number } | null = null;
-    let latestInatObservation: { url: string; date: string | null; count: number } | null = null;
+    let latestInatObservation: { url: string; date: string | null; count: number; imageUrl: string | null; location: string | null; observer: string | null } | null = null;
 
     const gbifIndex = 1;
     if (scientificName && responses[gbifIndex]?.ok) {
@@ -197,10 +197,19 @@ export async function GET(
             if (inatData.results && inatData.results.length > 0) {
               const obs = inatData.results[0];
               if (obs.references) {
+                // Extract image URL from media array
+                const imageUrl = obs.media?.[0]?.identifier || null;
+                // Build location string from available fields
+                const locationParts = [obs.verbatimLocality, obs.stateProvince, obs.country].filter(Boolean);
+                const location = locationParts.length > 0 ? locationParts.join(', ') : null;
+
                 latestInatObservation = {
                   url: obs.references,
                   date: obs.eventDate ? obs.eventDate.split('T')[0] : null,
                   count: inatCount,
+                  imageUrl,
+                  location,
+                  observer: obs.recordedBy || null,
                 };
               }
             }
