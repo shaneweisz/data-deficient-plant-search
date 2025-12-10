@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -9,7 +9,6 @@ import { ThemeToggle } from "../components/ThemeToggle";
 const RedListView = dynamic(
   () => import("../components/redlist/RedListView"),
   {
-    ssr: false,
     loading: () => (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="animate-spin h-10 w-10 border-4 border-red-600 border-t-transparent rounded-full" />

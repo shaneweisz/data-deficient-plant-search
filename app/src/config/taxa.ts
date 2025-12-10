@@ -40,19 +40,6 @@ const IUCN_SOURCE_URL = "https://nc.iucnredlist.org/redlist/content/attachment_f
 
 export const TAXA: TaxonConfig[] = [
   {
-    id: "aves",
-    name: "Birds",
-    apiEndpoint: "class/Aves",
-    estimatedDescribed: 11185,
-    estimatedSource: IUCN_SOURCE,
-    estimatedSourceUrl: IUCN_SOURCE_URL,
-    dataFile: "redlist-aves.json",
-    gbifDataFile: "gbif-aves.csv",
-    gbifKingdomKey: 1,
-    gbifClassKey: 212,
-    color: "#3b82f6", // blue-500
-  },
-  {
     id: "mammalia",
     name: "Mammals",
     apiEndpoint: "class/Mammalia",
@@ -64,6 +51,19 @@ export const TAXA: TaxonConfig[] = [
     gbifKingdomKey: 1,
     gbifClassKey: 359,
     color: "#f97316", // orange-500
+  },
+  {
+    id: "aves",
+    name: "Birds",
+    apiEndpoint: "class/Aves",
+    estimatedDescribed: 11185,
+    estimatedSource: IUCN_SOURCE,
+    estimatedSourceUrl: IUCN_SOURCE_URL,
+    dataFile: "redlist-aves.json",
+    gbifDataFile: "gbif-aves.csv",
+    gbifKingdomKey: 1,
+    gbifClassKey: 212,
+    color: "#3b82f6", // blue-500
   },
   {
     id: "reptilia",

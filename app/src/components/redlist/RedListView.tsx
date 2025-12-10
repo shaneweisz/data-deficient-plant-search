@@ -150,10 +150,10 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedYearRange, setSelectedYearRange] = useState<string | null>(null);
-  const [selectedAssessmentCount, setSelectedAssessmentCount] = useState<string | null>(null);
+  // Filters (multi-select using Sets)
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedYearRanges, setSelectedYearRanges] = useState<Set<string>>(new Set());
+  const [selectedAssessmentCounts, setSelectedAssessmentCounts] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sorting
@@ -222,9 +222,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
 
   // Reset filters when taxon changes
   useEffect(() => {
-    setSelectedCategory(null);
-    setSelectedYearRange(null);
-    setSelectedAssessmentCount(null);
+    setSelectedCategories(new Set());
+    setSelectedYearRanges(new Set());
+    setSelectedAssessmentCounts(new Set());
     setSearchQuery("");
     setCurrentPage(1);
     setSpeciesDetails({});
@@ -232,37 +232,43 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
 
   // Helper to check if species matches year range filter (based on assessment date)
   const matchesYearRangeFilter = (assessmentDate: string | null): boolean => {
-    if (!selectedYearRange) return true;
+    if (selectedYearRanges.size === 0) return true;
     if (!assessmentDate) return false;
     const currentYear = new Date().getFullYear();
     const assessmentYear = new Date(assessmentDate).getFullYear();
     const yearsSince = currentYear - assessmentYear;
 
-    switch (selectedYearRange) {
-      case "0-1 years": return yearsSince <= 1;
-      case "2-5 years": return yearsSince >= 2 && yearsSince <= 5;
-      case "6-10 years": return yearsSince >= 6 && yearsSince <= 10;
-      case "11-20 years": return yearsSince >= 11 && yearsSince <= 20;
-      case "20+ years": return yearsSince > 20;
-      default: return true;
+    // Check if matches ANY of the selected ranges
+    for (const range of selectedYearRanges) {
+      switch (range) {
+        case "0-1 years": if (yearsSince <= 1) return true; break;
+        case "2-5 years": if (yearsSince >= 2 && yearsSince <= 5) return true; break;
+        case "6-10 years": if (yearsSince >= 6 && yearsSince <= 10) return true; break;
+        case "11-20 years": if (yearsSince >= 11 && yearsSince <= 20) return true; break;
+        case "20+ years": if (yearsSince > 20) return true; break;
+      }
     }
+    return false;
   };
 
   // Helper to check if species matches assessment count filter
   const matchesAssessmentCountFilter = (count: number): boolean => {
-    if (!selectedAssessmentCount) return true;
-    switch (selectedAssessmentCount) {
-      case "1": return count === 1;
-      case "2": return count === 2;
-      case "3": return count === 3;
-      case "4+": return count >= 4;
-      default: return true;
+    if (selectedAssessmentCounts.size === 0) return true;
+    // Check if matches ANY of the selected counts
+    for (const selected of selectedAssessmentCounts) {
+      switch (selected) {
+        case "1": if (count === 1) return true; break;
+        case "2": if (count === 2) return true; break;
+        case "3": if (count === 3) return true; break;
+        case "4+": if (count >= 4) return true; break;
+      }
     }
+    return false;
   };
 
   // Filter species based on category, year range, assessment count, and search
   const filteredSpecies = species.filter((s) => {
-    const matchesCategory = !selectedCategory || s.category === selectedCategory;
+    const matchesCategory = selectedCategories.size === 0 || selectedCategories.has(s.category);
     const matchesYear = matchesYearRangeFilter(s.assessment_date);
     const matchesAssessment = matchesAssessmentCountFilter(s.assessment_count);
     const matchesSearch = !searchQuery ||
@@ -330,7 +336,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, selectedYearRange, selectedAssessmentCount, searchQuery]);
+  }, [selectedCategories, selectedYearRanges, selectedAssessmentCounts, searchQuery]);
 
   // Fetch details for visible species
   useEffect(() => {
@@ -388,37 +394,49 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
     }
   }, [paginatedSpecies, speciesDetails]);
 
-  // Handle category bar click
+  // Handle category bar click (toggle in/out of set)
   const handleCategoryClick = (data: { payload?: { code?: string } }) => {
     const code = data.payload?.code;
     if (!code) return;
-    if (selectedCategory === code) {
-      setSelectedCategory(null); // Toggle off
-    } else {
-      setSelectedCategory(code);
-    }
+    setSelectedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(code)) {
+        next.delete(code);
+      } else {
+        next.add(code);
+      }
+      return next;
+    });
   };
 
-  // Handle year range bar click
+  // Handle year range bar click (toggle in/out of set)
   const handleYearClick = (data: { payload?: { range?: string } }) => {
     const range = data.payload?.range;
     if (!range) return;
-    if (selectedYearRange === range) {
-      setSelectedYearRange(null); // Toggle off
-    } else {
-      setSelectedYearRange(range);
-    }
+    setSelectedYearRanges(prev => {
+      const next = new Set(prev);
+      if (next.has(range)) {
+        next.delete(range);
+      } else {
+        next.add(range);
+      }
+      return next;
+    });
   };
 
-  // Handle assessment count bar click
+  // Handle assessment count bar click (toggle in/out of set)
   const handleAssessmentCountClick = (data: { payload?: { range?: string } }) => {
     const range = data.payload?.range;
     if (!range) return;
-    if (selectedAssessmentCount === range) {
-      setSelectedAssessmentCount(null); // Toggle off
-    } else {
-      setSelectedAssessmentCount(range);
-    }
+    setSelectedAssessmentCounts(prev => {
+      const next = new Set(prev);
+      if (next.has(range)) {
+        next.delete(range);
+      } else {
+        next.add(range);
+      }
+      return next;
+    });
   };
 
   // Render loading state for details section
@@ -487,9 +505,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               # of Assessments <span className="font-normal text-zinc-400">(click to filter)</span>
             </h3>
-            {selectedAssessmentCount && (
+            {selectedAssessmentCounts.size > 0 && (
               <button
-                onClick={() => setSelectedAssessmentCount(null)}
+                onClick={() => setSelectedAssessmentCounts(new Set())}
                 className="text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400"
               >
                 Clear
@@ -533,7 +551,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     <Cell
                       key={`assessment-cell-${index}`}
                       fill="#8b5cf6"
-                      opacity={selectedAssessmentCount && selectedAssessmentCount !== entry.range ? 0.3 : 1}
+                      opacity={selectedAssessmentCounts.size > 0 && !selectedAssessmentCounts.has(entry.range) ? 0.3 : 1}
                     />
                   ))}
                   <LabelList
@@ -553,9 +571,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Years Since Last Assessed <span className="font-normal text-zinc-400">(click to filter)</span>
             </h3>
-            {selectedYearRange && (
+            {selectedYearRanges.size > 0 && (
               <button
-                onClick={() => setSelectedYearRange(null)}
+                onClick={() => setSelectedYearRanges(new Set())}
                 className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
                 Clear
@@ -606,7 +624,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     <Cell
                       key={`year-cell-${index}`}
                       fill="#3b82f6"
-                      opacity={selectedYearRange && selectedYearRange !== entry.range ? 0.3 : 1}
+                      opacity={selectedYearRanges.size > 0 && !selectedYearRanges.has(entry.range) ? 0.3 : 1}
                     />
                   ))}
                   <LabelList
@@ -626,9 +644,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Distribution by Category <span className="font-normal text-zinc-400">(click to filter)</span>
             </h3>
-            {selectedCategory && (
+            {selectedCategories.size > 0 && (
               <button
-                onClick={() => setSelectedCategory(null)}
+                onClick={() => setSelectedCategories(new Set())}
                 className="text-xs text-red-600 hover:text-red-700 dark:text-red-400"
               >
                 Clear
@@ -673,7 +691,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     <Cell
                       key={`cell-${index}`}
                       fill={entry.color}
-                      opacity={selectedCategory && selectedCategory !== entry.code ? 0.3 : 1}
+                      opacity={selectedCategories.size > 0 && !selectedCategories.has(entry.code) ? 0.3 : 1}
                     />
                   ))}
                   <LabelList
@@ -698,7 +716,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search species..."
+                placeholder="Search by scientific name..."
                 className="w-full px-4 py-2 pl-10 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
               />
               <svg
@@ -710,37 +728,40 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            {selectedCategory && (
+            {Array.from(selectedCategories).map(cat => (
               <button
-                onClick={() => setSelectedCategory(null)}
+                key={cat}
+                onClick={() => setSelectedCategories(prev => { const next = new Set(prev); next.delete(cat); return next; })}
                 className="px-3 py-1 text-sm rounded-full flex items-center gap-1 hover:opacity-80"
-                style={{ backgroundColor: CATEGORY_COLORS[selectedCategory] + "20", color: CATEGORY_COLORS[selectedCategory] }}
+                style={{ backgroundColor: CATEGORY_COLORS[cat] + "20", color: CATEGORY_COLORS[cat] }}
               >
-                {selectedCategory}
+                {cat}
                 <span className="text-xs">×</span>
               </button>
-            )}
-            {selectedYearRange && (
+            ))}
+            {Array.from(selectedYearRanges).map(range => (
               <button
-                onClick={() => setSelectedYearRange(null)}
+                key={range}
+                onClick={() => setSelectedYearRanges(prev => { const next = new Set(prev); next.delete(range); return next; })}
                 className="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center gap-1 hover:opacity-80"
               >
-                {selectedYearRange}
+                {range}
                 <span className="text-xs">×</span>
               </button>
-            )}
-            {selectedAssessmentCount && (
+            ))}
+            {Array.from(selectedAssessmentCounts).map(count => (
               <button
-                onClick={() => setSelectedAssessmentCount(null)}
+                key={count}
+                onClick={() => setSelectedAssessmentCounts(prev => { const next = new Set(prev); next.delete(count); return next; })}
                 className="px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 flex items-center gap-1 hover:opacity-80"
               >
-                {selectedAssessmentCount} assessment{selectedAssessmentCount !== "1" ? "s" : ""}
+                {count} assessment{count !== "1" ? "s" : ""}
                 <span className="text-xs">×</span>
               </button>
-            )}
-            {(selectedCategory || selectedYearRange || selectedAssessmentCount) && (
+            ))}
+            {(selectedCategories.size > 0 || selectedYearRanges.size > 0 || selectedAssessmentCounts.size > 0) && (
               <button
-                onClick={() => { setSelectedCategory(null); setSelectedYearRange(null); setSelectedAssessmentCount(null); }}
+                onClick={() => { setSelectedCategories(new Set()); setSelectedYearRanges(new Set()); setSelectedAssessmentCounts(new Set()); }}
                 className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline"
               >
                 Clear all
