@@ -1,5 +1,81 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTaxonConfig } from "@/config/taxa";
+import { getTaxonConfig, TaxonConfig } from "@/config/taxa";
+import { promises as fs } from "fs";
+import path from "path";
+
+interface RedListSpecies {
+  scientific_name: string;
+  category: string;
+}
+
+// Red List lookup cache: taxon -> (scientific_name lowercase -> category)
+const redListCache: Record<string, Map<string, string>> = {};
+
+// GBIF species key -> scientific name cache (from our pre-computed CSV files)
+const gbifNameCache: Record<string, Map<number, string>> = {};
+
+async function loadRedListLookup(taxon: TaxonConfig): Promise<Map<string, string>> {
+  const cacheKey = taxon.id;
+  if (redListCache[cacheKey]) return redListCache[cacheKey];
+
+  const lookup = new Map<string, string>();
+
+  // Load from primary dataFile or multiple dataFiles
+  const files = taxon.dataFiles || [taxon.dataFile];
+
+  for (const file of files) {
+    const filePath = path.join(process.cwd(), "data", file);
+    try {
+      const content = await fs.readFile(filePath, "utf-8");
+      const data = JSON.parse(content);
+      const species: RedListSpecies[] = data.species || [];
+
+      for (const sp of species) {
+        if (sp.scientific_name && sp.category) {
+          const normalizedName = sp.scientific_name.toLowerCase().trim();
+          lookup.set(normalizedName, sp.category);
+        }
+      }
+    } catch {
+      // File not found or invalid, skip
+    }
+  }
+
+  redListCache[cacheKey] = lookup;
+  return lookup;
+}
+
+// Load species key -> name mapping from GBIF CSV
+async function loadGbifNameLookup(taxon: TaxonConfig): Promise<Map<number, string>> {
+  const cacheKey = taxon.id;
+  if (gbifNameCache[cacheKey]) return gbifNameCache[cacheKey];
+
+  const lookup = new Map<number, string>();
+  const filePath = path.join(process.cwd(), "data", taxon.gbifDataFile);
+
+  try {
+    const content = await fs.readFile(filePath, "utf-8");
+    const lines = content.trim().split("\n");
+    const header = lines[0];
+    const hasScientificName = header.includes("scientific_name");
+
+    if (hasScientificName) {
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(",");
+        const speciesKey = parseInt(parts[0], 10);
+        const scientificName = parts[2];
+        if (speciesKey && scientificName) {
+          lookup.set(speciesKey, scientificName);
+        }
+      }
+    }
+  } catch {
+    // File not found, skip
+  }
+
+  gbifNameCache[cacheKey] = lookup;
+  return lookup;
+}
 
 export async function GET(
   request: NextRequest,
@@ -15,8 +91,13 @@ export async function GET(
   const minCount = parseInt(searchParams.get("minCount") || "0");
   const maxCount = parseInt(searchParams.get("maxCount") || "999999999");
   const sort = searchParams.get("sort") || "desc";
+  const redlistFilter = searchParams.get("redlist"); // "all", "NE", or specific category (CR, EN, VU, etc.)
 
   const taxon = getTaxonConfig(taxonId);
+
+  // Load lookups early so we can filter by Red List status
+  const redListLookup = await loadRedListLookup(taxon);
+  const gbifNameLookup = await loadGbifNameLookup(taxon);
 
   try {
     // Use GBIF occurrence search with facets to get species counts for the country
@@ -76,15 +157,26 @@ export async function GET(
       });
     }
 
-    // Convert facets to species records with counts
-    const allSpecies: { speciesKey: number; count: number }[] = speciesFacets.counts.map(
-      (facet: { name: string; count: number }) => ({
-        speciesKey: parseInt(facet.name),
-        count: facet.count,
-      })
+    // Convert facets to species records with counts and Red List status
+    const allSpecies: { speciesKey: number; count: number; scientificName: string | undefined; redlistCategory: string | null }[] = speciesFacets.counts.map(
+      (facet: { name: string; count: number }) => {
+        const speciesKey = parseInt(facet.name);
+        // Look up name from our cached GBIF data
+        const scientificName = gbifNameLookup.get(speciesKey);
+        // Look up Red List category
+        const normalizedName = scientificName?.toLowerCase().trim();
+        const redlistCategory = normalizedName ? redListLookup.get(normalizedName) || null : null;
+
+        return {
+          speciesKey,
+          count: facet.count,
+          scientificName,
+          redlistCategory,
+        };
+      }
     );
 
-    // Calculate stats from all species
+    // Calculate stats from all species (before filtering)
     const totalOccurrences = allSpecies.reduce((sum, s) => sum + s.count, 0);
     const counts = allSpecies.map(s => s.count).sort((a, b) => a - b);
     const median = counts.length > 0 ? counts[Math.floor(counts.length / 2)] : 0;
@@ -99,10 +191,31 @@ export async function GET(
       gt10000: allSpecies.filter(s => s.count > 10000).length,
     };
 
+    // Red List stats (before filtering)
+    const assessed = allSpecies.filter(s => s.redlistCategory);
+    const notAssessed = allSpecies.filter(s => !s.redlistCategory);
+    const redlistStats = {
+      assessed: assessed.length,
+      notAssessed: notAssessed.length,
+      assessedOccurrences: assessed.reduce((sum, s) => sum + s.count, 0),
+      notAssessedOccurrences: notAssessed.reduce((sum, s) => sum + s.count, 0),
+    };
+
     // Filter by count range
     let filteredSpecies = allSpecies.filter(
       s => s.count >= minCount && s.count <= maxCount
     );
+
+    // Filter by Red List category
+    if (redlistFilter && redlistFilter !== "all") {
+      if (redlistFilter === "NE") {
+        // Not Evaluated = no redlistCategory
+        filteredSpecies = filteredSpecies.filter(s => !s.redlistCategory);
+      } else {
+        // Specific category (CR, EN, VU, NT, LC, DD, EW, EX)
+        filteredSpecies = filteredSpecies.filter(s => s.redlistCategory === redlistFilter);
+      }
+    }
 
     // Sort
     if (sort === "asc") {
@@ -117,25 +230,59 @@ export async function GET(
     const startIdx = (page - 1) * limit;
     const pageSpecies = filteredSpecies.slice(startIdx, startIdx + limit);
 
-    // Fetch species names for the page
+    // Fetch additional species details (vernacular names) for the page
+    // Use cached scientific name if available, fall back to GBIF API
     const speciesWithNames = await Promise.all(
       pageSpecies.map(async (sp) => {
+        // If we already have the name from our cache, just fetch vernacular name
+        if (sp.scientificName) {
+          try {
+            const speciesResponse = await fetch(
+              `https://api.gbif.org/v1/species/${sp.speciesKey}`
+            );
+            const speciesData = await speciesResponse.json();
+            return {
+              species_key: sp.speciesKey,
+              occurrence_count: sp.count,
+              canonicalName: sp.scientificName,
+              vernacularName: speciesData.vernacularName,
+              redlist_category: sp.redlistCategory,
+            };
+          } catch {
+            return {
+              species_key: sp.speciesKey,
+              occurrence_count: sp.count,
+              canonicalName: sp.scientificName,
+              redlist_category: sp.redlistCategory,
+            };
+          }
+        }
+
+        // Fall back to full GBIF API lookup if not in our cache
         try {
           const speciesResponse = await fetch(
             `https://api.gbif.org/v1/species/${sp.speciesKey}`
           );
           const speciesData = await speciesResponse.json();
+          const canonicalName = speciesData.canonicalName || speciesData.scientificName;
+
+          // Look up Red List category
+          const normalizedName = canonicalName?.toLowerCase().trim();
+          const redlist_category = normalizedName ? redListLookup.get(normalizedName) || null : null;
+
           return {
             species_key: sp.speciesKey,
             occurrence_count: sp.count,
-            canonicalName: speciesData.canonicalName || speciesData.scientificName,
+            canonicalName,
             vernacularName: speciesData.vernacularName,
+            redlist_category,
           };
         } catch {
           return {
             species_key: sp.speciesKey,
             occurrence_count: sp.count,
             canonicalName: `Species ${sp.speciesKey}`,
+            redlist_category: null,
           };
         }
       })
@@ -155,6 +302,7 @@ export async function GET(
         totalOccurrences,
         median,
         distribution,
+        redlist: redlistStats,
       },
       country: countryCode,
     });

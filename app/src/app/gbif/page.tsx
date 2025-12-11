@@ -119,7 +119,7 @@ interface ApiResponse {
 }
 
 type FilterPreset = "all" | "eq1" | "gt1_lte10" | "gt10_lte100" | "gt100_lte1000" | "gt1000_lte10000" | "gt10000";
-type RedlistFilter = "all" | "none" | "assessed";
+type RedlistFilter = "all" | "NE" | "DD" | "LC" | "NT" | "VU" | "EN" | "CR" | "EW" | "EX";
 type RegionMode = "global" | "country";
 
 // Dynamically import WorldMap component
@@ -799,27 +799,23 @@ export default function Home() {
               </button>
             )}
           </form>
-          {/* Red List filter toggle */}
-          <button
-            onClick={() => handleRedlistFilterChange(redlistFilter === "none" ? "all" : "none")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-              redlistFilter === "none"
-                ? "bg-red-600 text-white"
-                : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
-            }`}
-            title={stats?.redlist ? `${formatNumber(stats.redlist.notAssessed)} species without Red List assessment` : "Filter to species without Red List assessment"}
+          {/* Red List category filter */}
+          <select
+            value={redlistFilter}
+            onChange={(e) => handleRedlistFilterChange(e.target.value as RedlistFilter)}
+            className="px-3 py-2 rounded-lg text-sm bg-white text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
           >
-            {redlistFilter === "none" ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" strokeWidth={2} />
-              </svg>
-            )}
-            Not Evaluated
-          </button>
+            <option value="all">All Categories</option>
+            <option value="NE">NE - Not Evaluated</option>
+            <option value="DD">DD - Data Deficient</option>
+            <option value="LC">LC - Least Concern</option>
+            <option value="NT">NT - Near Threatened</option>
+            <option value="VU">VU - Vulnerable</option>
+            <option value="EN">EN - Endangered</option>
+            <option value="CR">CR - Critically Endangered</option>
+            <option value="EW">EW - Extinct in Wild</option>
+            <option value="EX">EX - Extinct</option>
+          </select>
           {availableCandidates.length > 0 && (
             <button
               onClick={() => setShowOnlyWithCandidates(!showOnlyWithCandidates)}

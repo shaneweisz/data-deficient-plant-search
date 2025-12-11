@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
   const minCount = parseInt(searchParams.get("minCount") || "0", 10);
   const maxCount = parseInt(searchParams.get("maxCount") || "999999999", 10);
   const sortOrder = searchParams.get("sort") || "desc";
-  const redlistFilter = searchParams.get("redlist"); // "none" = not assessed, "assessed" = has assessment
+  const redlistFilter = searchParams.get("redlist"); // "all", "NE", or specific category (CR, EN, VU, etc.)
 
   const data = await loadData(taxonId);
 
@@ -114,11 +114,15 @@ export async function GET(request: NextRequest) {
     (d) => d.occurrence_count >= minCount && d.occurrence_count <= maxCount
   );
 
-  // Filter by Red List status
-  if (redlistFilter === "none") {
-    filtered = filtered.filter((d) => !d.redlist_category);
-  } else if (redlistFilter === "assessed") {
-    filtered = filtered.filter((d) => d.redlist_category);
+  // Filter by Red List category
+  if (redlistFilter && redlistFilter !== "all") {
+    if (redlistFilter === "NE") {
+      // Not Evaluated = no redlist_category
+      filtered = filtered.filter((d) => !d.redlist_category);
+    } else {
+      // Specific category (CR, EN, VU, NT, LC, DD, EW, EX)
+      filtered = filtered.filter((d) => d.redlist_category === redlistFilter);
+    }
   }
 
   // Sort
