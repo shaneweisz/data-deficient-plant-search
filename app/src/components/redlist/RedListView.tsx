@@ -929,10 +929,10 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                   Previous Assessments
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  GBIF Records
+                  GBIF Records At Assessment
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  GBIF Records Since Assessed
+                  New GBIF Records
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Red List
@@ -1061,21 +1061,23 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
                         <span className="text-zinc-400 animate-pulse">...</span>
-                      ) : details?.gbifOccurrences != null && details?.gbifUrl ? (
+                      ) : details?.gbifOccurrences != null && details?.gbifUrl ? (() => {
+                        const recordsAtAssessment = details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0);
+                        return (
                         <span className="relative group/gbif">
                           <a
-                            href={`https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}`}
+                            href={assessmentYear ? `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {details.gbifOccurrences.toLocaleString()}
+                            {recordsAtAssessment.toLocaleString()}
                           </a>
                           {details?.gbifByRecordType && (
                             <div className="absolute right-0 top-full z-10 hidden group-hover/gbif:block pt-2 pr-2 -mr-2">
                               <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
-                                <div className="text-zinc-300 font-medium mb-1">Breakdown by type:</div>
+                                <div className="text-zinc-300 font-medium mb-1">{assessmentYear ? `Up to ${assessmentYear}:` : 'Breakdown by type:'}</div>
                                 <div className="space-y-0.5 text-zinc-400">
                                   <div className="flex justify-between">
                                     <span>Human observations</span>
@@ -1151,8 +1153,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             </div>
                           )}
                         </span>
-                      ) : details?.gbifOccurrences != null ? (
-                        details.gbifOccurrences.toLocaleString()
+                        );
+                      })() : details?.gbifOccurrences != null ? (
+                        (details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0)).toLocaleString()
                       ) : "—"}
                     </td>
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
