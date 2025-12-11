@@ -1074,24 +1074,32 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                           >
                             {recordsAtAssessment.toLocaleString()}
                           </a>
-                          {details?.gbifByRecordType && (
-                            <div className="absolute right-0 top-full z-10 hidden group-hover/gbif:block pt-2 pr-2 -mr-2">
+                          {details?.gbifByRecordType && (() => {
+                            // Calculate pre-assessment counts by subtracting new records
+                            const newByType = details.gbifNewByRecordType || { humanObservation: 0, preservedSpecimen: 0, machineObservation: 0, other: 0, iNaturalist: 0 };
+                            const preAssessmentHuman = details.gbifByRecordType.humanObservation - newByType.humanObservation;
+                            const preAssessmentSpecimen = details.gbifByRecordType.preservedSpecimen - newByType.preservedSpecimen;
+                            const preAssessmentMachine = details.gbifByRecordType.machineObservation - newByType.machineObservation;
+                            const preAssessmentOther = details.gbifByRecordType.other - newByType.other;
+                            const preAssessmentInat = (details.gbifByRecordType.iNaturalist || 0) - (newByType.iNaturalist || 0);
+                            return (
+                            <div className="absolute right-0 bottom-full z-10 hidden group-hover/gbif:block pb-2 pr-2 -mr-2">
                               <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
                                 <div className="text-zinc-300 font-medium mb-1">{assessmentYear ? `Up to ${assessmentYear}:` : 'Breakdown by type:'}</div>
                                 <div className="space-y-0.5 text-zinc-400">
                                   <div className="flex justify-between">
                                     <span>Human observations</span>
                                     <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
                                       onClick={(e) => e.stopPropagation()}
                                     >
-                                      {details.gbifByRecordType.humanObservation.toLocaleString()}
+                                      {preAssessmentHuman.toLocaleString()}
                                     </a>
                                   </div>
-                                  {details.recentInatObservations.length > 0 && details.inatTotalCount > 0 && (
+                                  {preAssessmentInat > 0 && details.recentInatObservations.length > 0 && (
                                     <div className="flex justify-between pl-3 text-[11px]">
                                       <span className="relative group/inat">
                                         <span className="text-amber-400 hover:text-amber-300 cursor-pointer">iNaturalist</span>
@@ -1108,50 +1116,51 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                                         </div>
                                       </span>
                                       <a
-                                        href={`https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                        href={assessmentYear ? `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-zinc-300 hover:text-amber-400 hover:underline tabular-nums"
                                         onClick={(e) => e.stopPropagation()}
                                       >
-                                        {details.inatTotalCount.toLocaleString()}
+                                        {preAssessmentInat.toLocaleString()}
                                       </a>
                                     </div>
                                   )}
                                   <div className="flex justify-between">
                                     <span>Preserved specimens</span>
                                     <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
                                       onClick={(e) => e.stopPropagation()}
                                     >
-                                      {details.gbifByRecordType.preservedSpecimen.toLocaleString()}
+                                      {preAssessmentSpecimen.toLocaleString()}
                                     </a>
                                   </div>
                                   <div className="flex justify-between">
                                     <span>Machine observations</span>
                                     <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
                                       onClick={(e) => e.stopPropagation()}
                                     >
-                                      {details.gbifByRecordType.machineObservation.toLocaleString()}
+                                      {preAssessmentMachine.toLocaleString()}
                                     </a>
                                   </div>
-                                  {details.gbifByRecordType.other > 0 && (
+                                  {preAssessmentOther > 0 && (
                                     <div className="flex justify-between">
                                       <span>Other</span>
-                                      <span className="text-zinc-200 tabular-nums">{details.gbifByRecordType.other.toLocaleString()}</span>
+                                      <span className="text-zinc-200 tabular-nums">{preAssessmentOther.toLocaleString()}</span>
                                     </div>
                                   )}
                                 </div>
                               </div>
                             </div>
-                          )}
+                            );
+                          })()}
                         </span>
                         );
                       })() : details?.gbifOccurrences != null ? (
