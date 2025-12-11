@@ -92,13 +92,12 @@ interface Stats {
   totalOccurrences: number;
   median: number;
   distribution: {
-    lte1: number;
-    lte10: number;
-    lte100: number;
-    lte1000: number;
-    lte10000: number;
-    lte100000: number;
-    lte1000000: number;
+    eq1: number;
+    gt1_lte10: number;
+    gt10_lte100: number;
+    gt100_lte1000: number;
+    gt1000_lte10000: number;
+    gt10000: number;
   };
   redlist?: {
     assessed: number;
@@ -119,7 +118,7 @@ interface ApiResponse {
   stats: Stats;
 }
 
-type FilterPreset = "all" | "dataDeficient" | "veryRare" | "singletons";
+type FilterPreset = "all" | "eq1" | "gt1_lte10" | "gt10_lte100" | "gt100_lte1000" | "gt1000_lte10000" | "gt10000";
 type RedlistFilter = "all" | "none" | "assessed";
 type RegionMode = "global" | "country";
 
@@ -136,9 +135,12 @@ const WorldMap = dynamic(
 
 const FILTER_PRESETS: Record<FilterPreset, { minCount: number; maxCount: number; label: string }> = {
   all: { minCount: 0, maxCount: 999999999, label: "All Species" },
-  dataDeficient: { minCount: 0, maxCount: 100, label: "≤ 100" },
-  veryRare: { minCount: 0, maxCount: 10, label: "≤ 10" },
-  singletons: { minCount: 1, maxCount: 1, label: "= 1" },
+  eq1: { minCount: 1, maxCount: 1, label: "= 1" },
+  gt1_lte10: { minCount: 2, maxCount: 10, label: "2–10" },
+  gt10_lte100: { minCount: 11, maxCount: 100, label: "11–100" },
+  gt100_lte1000: { minCount: 101, maxCount: 1000, label: "101–1K" },
+  gt1000_lte10000: { minCount: 1001, maxCount: 10000, label: "1K–10K" },
+  gt10000: { minCount: 10001, maxCount: 999999999, label: "> 10K" },
 };
 
 // Shared search endpoint for all regions
@@ -722,34 +724,25 @@ export default function Home() {
               </div>
               <div className="space-y-1.5">
                 {[
-                  { label: "≤ 1", count: stats.distribution.lte1, preset: "singletons" as FilterPreset },
-                  { label: "≤ 10", count: stats.distribution.lte10, preset: "veryRare" as FilterPreset },
-                  { label: "≤ 100", count: stats.distribution.lte100, preset: "dataDeficient" as FilterPreset },
-                  { label: "≤ 1K", count: stats.distribution.lte1000, preset: "all" as FilterPreset },
-                  { label: "≤ 10K", count: stats.distribution.lte10000, preset: "all" as FilterPreset },
-                  { label: "≤ 100K", count: stats.distribution.lte100000, preset: "all" as FilterPreset },
+                  { label: "= 1", count: stats.distribution.eq1, preset: "eq1" as FilterPreset },
+                  { label: "2–10", count: stats.distribution.gt1_lte10, preset: "gt1_lte10" as FilterPreset },
+                  { label: "11–100", count: stats.distribution.gt10_lte100, preset: "gt10_lte100" as FilterPreset },
+                  { label: "101–1K", count: stats.distribution.gt100_lte1000, preset: "gt100_lte1000" as FilterPreset },
+                  { label: "1K–10K", count: stats.distribution.gt1000_lte10000, preset: "gt1000_lte10000" as FilterPreset },
+                  { label: "> 10K", count: stats.distribution.gt10000, preset: "gt10000" as FilterPreset },
                 ].map(({ label, count, preset }) => {
-                  const isActive = (
-                    (label === "≤ 1" && filterPreset === "singletons") ||
-                    (label === "≤ 10" && filterPreset === "veryRare") ||
-                    (label === "≤ 100" && filterPreset === "dataDeficient")
-                  );
+                  const isActive = filterPreset === preset;
                   return (
                     <button
                       key={label}
-                      onClick={() => {
-                        if (label === "≤ 1") handleFilterChange("singletons");
-                        else if (label === "≤ 10") handleFilterChange("veryRare");
-                        else if (label === "≤ 100") handleFilterChange("dataDeficient");
-                        else handleFilterChange("all");
-                      }}
+                      onClick={() => handleFilterChange(isActive ? "all" : preset)}
                       className={`w-full flex items-center gap-2 p-1 rounded-lg transition-colors ${
                         isActive
                           ? "bg-orange-100 dark:bg-orange-900/30"
                           : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                       }`}
                     >
-                      <div className="w-12 text-xs text-zinc-500 shrink-0 text-left">{label}</div>
+                      <div className="w-14 text-xs text-zinc-500 shrink-0 text-left">{label}</div>
                       <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${

@@ -70,7 +70,7 @@ export async function GET(
           filtered: 0,
           totalOccurrences: 0,
           median: 0,
-          distribution: { lte1: 0, lte10: 0, lte100: 0, lte1000: 0, lte10000: 0, lte100000: 0, lte1000000: 0 },
+          distribution: { eq1: 0, gt1_lte10: 0, gt10_lte100: 0, gt100_lte1000: 0, gt1000_lte10000: 0, gt10000: 0 },
         },
         country: countryCode,
       });
@@ -90,13 +90,13 @@ export async function GET(
     const median = counts.length > 0 ? counts[Math.floor(counts.length / 2)] : 0;
 
     const distribution = {
-      lte1: allSpecies.filter(s => s.count <= 1).length,
-      lte10: allSpecies.filter(s => s.count <= 10).length,
-      lte100: allSpecies.filter(s => s.count <= 100).length,
-      lte1000: allSpecies.filter(s => s.count <= 1000).length,
-      lte10000: allSpecies.filter(s => s.count <= 10000).length,
-      lte100000: allSpecies.filter(s => s.count <= 100000).length,
-      lte1000000: allSpecies.filter(s => s.count <= 1000000).length,
+      // Histogram buckets (non-cumulative)
+      eq1: allSpecies.filter(s => s.count === 1).length,
+      gt1_lte10: allSpecies.filter(s => s.count > 1 && s.count <= 10).length,
+      gt10_lte100: allSpecies.filter(s => s.count > 10 && s.count <= 100).length,
+      gt100_lte1000: allSpecies.filter(s => s.count > 100 && s.count <= 1000).length,
+      gt1000_lte10000: allSpecies.filter(s => s.count > 1000 && s.count <= 10000).length,
+      gt10000: allSpecies.filter(s => s.count > 10000).length,
     };
 
     // Filter by count range

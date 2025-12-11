@@ -142,13 +142,13 @@ export async function GET(request: NextRequest) {
     totalOccurrences: data.reduce((sum, d) => sum + d.occurrence_count, 0),
     median: data[Math.floor(data.length / 2)]?.occurrence_count || 0,
     distribution: {
-      lte1: data.filter((d) => d.occurrence_count <= 1).length,
-      lte10: data.filter((d) => d.occurrence_count <= 10).length,
-      lte100: data.filter((d) => d.occurrence_count <= 100).length,
-      lte1000: data.filter((d) => d.occurrence_count <= 1000).length,
-      lte10000: data.filter((d) => d.occurrence_count <= 10000).length,
-      lte100000: data.filter((d) => d.occurrence_count <= 100000).length,
-      lte1000000: data.filter((d) => d.occurrence_count <= 1000000).length,
+      // Histogram buckets (non-cumulative)
+      eq1: data.filter((d) => d.occurrence_count === 1).length,
+      gt1_lte10: data.filter((d) => d.occurrence_count > 1 && d.occurrence_count <= 10).length,
+      gt10_lte100: data.filter((d) => d.occurrence_count > 10 && d.occurrence_count <= 100).length,
+      gt100_lte1000: data.filter((d) => d.occurrence_count > 100 && d.occurrence_count <= 1000).length,
+      gt1000_lte10000: data.filter((d) => d.occurrence_count > 1000 && d.occurrence_count <= 10000).length,
+      gt10000: data.filter((d) => d.occurrence_count > 10000).length,
     },
     redlist: {
       assessed: assessed.length,
