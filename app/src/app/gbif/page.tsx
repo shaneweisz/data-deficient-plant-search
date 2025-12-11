@@ -908,8 +908,10 @@ export default function Home() {
                         )}
                       </td>
                       <td className="px-2 sm:px-4 py-2">
-                        <div className="text-sm text-zinc-900 dark:text-zinc-100">{species.vernacularName || "—"}</div>
-                        <div className="text-xs text-zinc-500 italic">{species.canonicalName}</div>
+                        <div className="text-sm text-zinc-900 dark:text-zinc-100">
+                          <span className="italic">{species.canonicalName}</span>
+                          {species.vernacularName && <span className="text-zinc-500 ml-1">({species.vernacularName})</span>}
+                        </div>
                       </td>
                       <td className="px-2 sm:px-4 py-2 text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
                         {species.occurrenceCount ? formatNumber(species.occurrenceCount) : "—"}
@@ -981,14 +983,16 @@ export default function Home() {
                         </td>
                         <td className="px-2 sm:px-4 py-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100">{commonName}</span>
+                            <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                              <span className="italic">{displayName}</span>
+                              {commonName && commonName !== "—" && <span className="text-zinc-500 ml-1">({commonName})</span>}
+                            </span>
                             {hasCandidates && (
                               <span className="px-1.5 py-0.5 text-[10px] font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 rounded">
                                 AI
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-zinc-500 italic">{displayName}</div>
                         </td>
                         <td className="px-2 sm:px-4 py-2 text-sm text-right font-medium text-zinc-900 dark:text-zinc-100">
                           {formatNumber(record.occurrence_count)}
@@ -1013,7 +1017,7 @@ export default function Home() {
                               </span>
                             </a>
                           ) : (
-                            <span className="text-xs text-zinc-400">—</span>
+                            <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">NE</span>
                           )}
                         </td>
                         <td className="hidden sm:table-cell px-2 sm:px-4 py-2 text-center">
