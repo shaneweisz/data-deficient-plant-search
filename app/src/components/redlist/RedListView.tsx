@@ -90,6 +90,11 @@ interface InatObservation {
   observer: string | null;
 }
 
+interface InatDefaultImage {
+  squareUrl: string | null;
+  mediumUrl: string | null;
+}
+
 interface SpeciesDetails {
   criteria: string | null;
   commonName: string | null;
@@ -100,6 +105,7 @@ interface SpeciesDetails {
   gbifNewByRecordType: GbifByRecordType | null;
   recentInatObservations: InatObservation[];
   inatTotalCount: number;
+  inatDefaultImage: InatDefaultImage | null;
 }
 
 interface SpeciesResponse {
@@ -445,6 +451,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             gbifNewByRecordType: result.data.gbifNewByRecordType,
             recentInatObservations: result.data.recentInatObservations || [],
             inatTotalCount: result.data.inatTotalCount || 0,
+            inatDefaultImage: result.data.inatDefaultImage || null,
           };
         }
       });
@@ -798,9 +805,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
       </div>
 
       {/* Search and Species Table */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl">
         {/* Search bar */}
-        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl">
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-md">
               <input
@@ -869,6 +876,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
           <table className="w-full text-sm">
             <thead className="bg-zinc-50 dark:bg-zinc-800">
               <tr>
+                <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider w-14">
+                  Image
+                </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Species
                 </th>
@@ -923,6 +933,36 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 const details = speciesDetails[s.sis_taxon_id];
                 return (
                   <tr key={s.sis_taxon_id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                    <td className="hidden md:table-cell px-4 py-2">
+                      {details === undefined ? (
+                        <div className="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+                      ) : details?.inatDefaultImage?.squareUrl ? (
+                        <img
+                          src={details.inatDefaultImage.squareUrl}
+                          alt=""
+                          className="w-10 h-10 object-cover rounded cursor-pointer hover:ring-2 hover:ring-red-400"
+                          onMouseEnter={(e) => {
+                            const img = e.currentTarget;
+                            const rect = img.getBoundingClientRect();
+                            const preview = document.getElementById('image-preview');
+                            if (preview) {
+                              (preview as HTMLImageElement).src = details.inatDefaultImage?.mediumUrl || details.inatDefaultImage?.squareUrl || '';
+                              preview.style.display = 'block';
+                              preview.style.top = `${rect.top - 192 - 8}px`; // 192px = w-48, 8px gap
+                              preview.style.left = `${rect.left}px`;
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            const preview = document.getElementById('image-preview');
+                            if (preview) {
+                              preview.style.display = 'none';
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <a
                         href={s.url}
@@ -1106,7 +1146,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             {details.gbifOccurrencesSinceAssessment.toLocaleString()}
                           </a>
                           {details?.gbifNewByRecordType && (
-                            <div className="absolute right-0 top-full z-10 hidden group-hover/newgbif:block pt-2 pr-2 -mr-2">
+                            <div className="absolute right-0 bottom-full z-10 hidden group-hover/newgbif:block pb-2 pr-2 -mr-2">
                               <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
                                 <div className="text-zinc-300 font-medium mb-1">After {assessmentYear}:</div>
                                 <div className="space-y-0.5 text-zinc-400">
@@ -1206,7 +1246,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
               })}
               {filteredSpecies.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-zinc-500">
+                  <td colSpan={10} className="px-4 py-8 text-center text-zinc-500">
                     No species found
                   </td>
                 </tr>
@@ -1247,6 +1287,14 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
           )}
         </div>
       )}
+
+      {/* Fixed image preview portal */}
+      <img
+        id="image-preview"
+        alt=""
+        className="fixed z-[9999] w-48 h-48 object-cover rounded shadow-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 pointer-events-none"
+        style={{ display: 'none' }}
+      />
     </div>
   );
 }

@@ -20,6 +20,16 @@ interface IUCNTaxon {
   };
 }
 
+interface INatTaxon {
+  results?: {
+    default_photo?: {
+      square_url?: string;
+      medium_url?: string;
+      url?: string;
+    };
+  }[];
+}
+
 // Cache for species details (1 hour)
 const detailsCache = new Map<string, { data: object; timestamp: number }>();
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
@@ -80,6 +90,7 @@ export async function GET(
     let gbifUrl: string | null = null;
     let gbifOccurrences: number | null = null;
     let assessmentCount = 1;
+    let inatDefaultImage: { squareUrl: string | null; mediumUrl: string | null } | null = null;
 
     // Parse IUCN taxon response (for assessment count and common name)
     if (responses[0]?.ok) {
@@ -175,12 +186,18 @@ export async function GET(
             }
           }
 
-          const [gbifResponses, inatCountResponse, inatRecentResponse, inatNewCountResponse, sameYearResponses] = await Promise.all([
+          // Fetch iNaturalist default species image
+          const inatTaxaPromise = fetch(
+            `https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(scientificName)}&rank=species&per_page=1`
+          );
+
+          const [gbifResponses, inatCountResponse, inatRecentResponse, inatNewCountResponse, sameYearResponses, inatTaxaResponse] = await Promise.all([
             Promise.all(gbifPromises),
             inatCountPromise,
             inatRecentPromise,
             inatNewCountPromise || Promise.resolve(null),
             sameYearPromises.length > 0 ? Promise.all(sameYearPromises) : Promise.resolve([]),
+            inatTaxaPromise,
           ]);
 
           // Parse responses
@@ -191,6 +208,18 @@ export async function GET(
           // Parse iNaturalist count and recent observations
           if (inatCountResponse?.ok) {
             inatTotalCount = await inatCountResponse.json();
+          }
+
+          // Parse iNaturalist default species image
+          if (inatTaxaResponse?.ok) {
+            const inatTaxaData: INatTaxon = await inatTaxaResponse.json();
+            const defaultPhoto = inatTaxaData.results?.[0]?.default_photo;
+            if (defaultPhoto) {
+              inatDefaultImage = {
+                squareUrl: defaultPhoto.square_url || defaultPhoto.url || null,
+                mediumUrl: defaultPhoto.medium_url || defaultPhoto.url || null,
+              };
+            }
           }
           if (inatRecentResponse?.ok) {
             const inatData = await inatRecentResponse.json();
@@ -298,6 +327,7 @@ export async function GET(
       gbifNewByRecordType,
       recentInatObservations,
       inatTotalCount,
+      inatDefaultImage,
       assessmentCount,
     };
 
