@@ -929,10 +929,10 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                   Previous Assessments
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  GBIF Occurrences
+                  GBIF Records
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  GBIF Occurrences Since Assessed
+                  GBIF Records Since Assessed
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Red List
