@@ -869,7 +869,7 @@ export default function Home() {
                     Rank
                   </th>
                 )}
-                <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase w-20">
+                <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase w-14">
                   Image
                 </th>
                 <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">
@@ -902,9 +902,30 @@ export default function Home() {
                     >
                       <td className="hidden md:table-cell px-4 py-2">
                         {species.imageUrl ? (
-                          <img src={species.imageUrl} alt="" className="w-16 h-16 object-cover rounded" />
+                          <img
+                            src={species.imageUrl}
+                            alt=""
+                            className="w-10 h-10 object-cover rounded cursor-pointer hover:ring-2 hover:ring-green-400"
+                            onMouseEnter={(e) => {
+                              const img = e.currentTarget;
+                              const rect = img.getBoundingClientRect();
+                              const preview = document.getElementById('gbif-image-preview');
+                              if (preview) {
+                                (preview as HTMLImageElement).src = species.imageUrl || '';
+                                preview.style.display = 'block';
+                                preview.style.top = `${rect.top - 192 - 8}px`;
+                                preview.style.left = `${rect.left}px`;
+                              }
+                            }}
+                            onMouseLeave={() => {
+                              const preview = document.getElementById('gbif-image-preview');
+                              if (preview) {
+                                preview.style.display = 'none';
+                              }
+                            }}
+                          />
                         ) : (
-                          <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                          <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
                         )}
                       </td>
                       <td className="px-2 sm:px-4 py-2">
@@ -974,11 +995,32 @@ export default function Home() {
                         <td className="px-2 sm:px-4 py-2 text-sm text-zinc-500">#{formatNumber(rank)}</td>
                         <td className="hidden md:table-cell px-4 py-2">
                           {isLoading ? (
-                            <div className="w-16 h-16 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+                            <div className="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
                           ) : cached?.imageUrl ? (
-                            <img src={cached.imageUrl} alt="" className="w-16 h-16 object-cover rounded" />
+                            <img
+                              src={cached.imageUrl}
+                              alt=""
+                              className="w-10 h-10 object-cover rounded cursor-pointer hover:ring-2 hover:ring-green-400"
+                              onMouseEnter={(e) => {
+                                const img = e.currentTarget;
+                                const rect = img.getBoundingClientRect();
+                                const preview = document.getElementById('gbif-image-preview');
+                                if (preview) {
+                                  (preview as HTMLImageElement).src = cached.imageUrl || '';
+                                  preview.style.display = 'block';
+                                  preview.style.top = `${rect.top - 192 - 8}px`;
+                                  preview.style.left = `${rect.left}px`;
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                const preview = document.getElementById('gbif-image-preview');
+                                if (preview) {
+                                  preview.style.display = 'none';
+                                }
+                              }}
+                            />
                           ) : (
-                            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded" />
+                            <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
                           )}
                         </td>
                         <td className="px-2 sm:px-4 py-2">
@@ -1080,6 +1122,14 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Fixed image preview portal */}
+      <img
+        id="gbif-image-preview"
+        alt=""
+        className="fixed z-[9999] w-48 h-48 object-cover rounded shadow-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 pointer-events-none"
+        style={{ display: 'none' }}
+      />
     </div>
   );
 }
