@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 
 // Dynamically import Leaflet components
@@ -66,6 +67,25 @@ interface CandidateFeature {
   };
 }
 
+interface InatObservation {
+  url: string;
+  date: string | null;
+  imageUrl: string | null;
+  location: string | null;
+  observer: string | null;
+}
+
+interface RecordTypeBreakdown {
+  humanObservation: number;
+  preservedSpecimen: number;
+  machineObservation: number;
+  other: number;
+  iNaturalist: number;
+  recentInatObservations?: InatObservation[];
+  inatTotalCount?: number;
+  total?: number;
+}
+
 interface OccurrenceMapRowProps {
   speciesKey: number;
   speciesName?: string;
@@ -73,6 +93,85 @@ interface OccurrenceMapRowProps {
   mounted: boolean;
   colSpan: number;
   hasCandidates?: boolean;
+}
+
+// iNat photo thumbnail with hover preview using portal
+function InatPhotoWithPreview({ obs, idx }: { obs: InatObservation; idx: number }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const thumbRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isHovered && thumbRef.current) {
+      const rect = thumbRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.top,
+        left: rect.right - 4,
+      });
+    }
+  }, [isHovered]);
+
+  return (
+    <div
+      ref={thumbRef}
+      className="aspect-square relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <a
+        href={obs.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full h-full"
+      >
+        {obs.imageUrl ? (
+          <img
+            src={obs.imageUrl}
+            alt={`iNaturalist observation ${idx + 1}`}
+            className={`w-full h-full object-cover rounded ring-1 ring-zinc-200 dark:ring-zinc-700 transition-all ${isHovered ? 'ring-2 ring-blue-500' : ''}`}
+          />
+        ) : (
+          <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 rounded flex items-center justify-center text-zinc-400 text-xs">
+            ?
+          </div>
+        )}
+      </a>
+      {isHovered && obs.imageUrl && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[99999]"
+          style={{ top: position.top, left: position.left, transform: 'translateY(-100%) translateY(8px)' }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden w-52">
+            <a href={obs.url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={obs.imageUrl}
+                alt={`iNaturalist observation ${idx + 1}`}
+                className="w-full h-40 object-cover hover:opacity-90 cursor-pointer"
+              />
+            </a>
+            <div className="p-2 text-xs space-y-1">
+              {obs.date && (
+                <div className="text-zinc-500 dark:text-zinc-400">{obs.date}</div>
+              )}
+              {obs.observer && (
+                <div className="text-zinc-700 dark:text-zinc-300 truncate">
+                  <span className="text-zinc-400">by</span> {obs.observer}
+                </div>
+              )}
+              {obs.location && (
+                <div className="text-zinc-600 dark:text-zinc-400 truncate" title={obs.location}>
+                  {obs.location}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
 }
 
 // Color scale from grey (low prob) to red (high prob)
@@ -93,8 +192,10 @@ export default function OccurrenceMapRow({
 }: OccurrenceMapRowProps) {
   const [occurrences, setOccurrences] = useState<OccurrenceFeature[]>([]);
   const [candidates, setCandidates] = useState<CandidateFeature[]>([]);
+  const [breakdown, setBreakdown] = useState<RecordTypeBreakdown | null>(null);
   const [loadingOccurrences, setLoadingOccurrences] = useState(true);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
+  const [loadingBreakdown, setLoadingBreakdown] = useState(true);
   const [showCandidates, setShowCandidates] = useState(true);
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.7);
 
@@ -131,66 +232,141 @@ export default function OccurrenceMapRow({
       .finally(() => setLoadingCandidates(false));
   }, [speciesName, hasCandidates]);
 
+  // Fetch breakdown data
+  useEffect(() => {
+    setLoadingBreakdown(true);
+    const params = new URLSearchParams();
+    if (countryCode) {
+      params.set("country", countryCode);
+    }
+    fetch(`/api/species/${speciesKey}/breakdown?${params}`)
+      .then((res) => res.json())
+      .then((data) => setBreakdown(data))
+      .catch(console.error)
+      .finally(() => setLoadingBreakdown(false));
+  }, [speciesKey, countryCode]);
+
   // Sort candidates by probability (low first so high prob renders on top)
   const sortedCandidates = [...candidates].sort(
     (a, b) => a.properties.probability - b.properties.probability
   );
 
   return (
-    <tr>
-      <td colSpan={colSpan} className="p-0">
-        <div className="bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700">
-          <div className="p-2">
-            {/* Controls for candidates */}
-            {hasCandidates && (
-              <div className="flex flex-wrap items-center gap-4 mb-2 p-2 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={showCandidates}
-                    onChange={(e) => setShowCandidates(e.target.checked)}
-                    className="w-4 h-4 rounded accent-orange-500"
-                  />
-                  <span className="text-sm text-zinc-700 dark:text-zinc-300">
-                    Show heatmap ({loadingCandidates ? "..." : candidates.length}{" "}
-                    points)
-                  </span>
-                </label>
-                {showCandidates && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500">Opacity:</span>
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="1"
-                      step="0.1"
-                      value={heatmapOpacity}
-                      onChange={(e) => setHeatmapOpacity(parseFloat(e.target.value))}
-                      className="w-20 accent-orange-500"
-                    />
+    <tr className="overflow-visible">
+      <td colSpan={colSpan} className="p-0 overflow-visible">
+        <div className="bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700 overflow-visible">
+          <div className="p-2 overflow-visible">
+            {/* Main layout: 1/3 left (breakdown + photos), 2/3 right (map) */}
+            <div className="flex flex-col lg:flex-row gap-3 overflow-visible">
+              {/* Left column: Breakdown + iNat photos (1/3 width) */}
+              <div className="lg:w-1/3 flex flex-col gap-3 overflow-visible relative z-10">
+                {/* Observation type breakdown */}
+                <div className="p-3 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                  <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Observation Types</div>
+                  {loadingBreakdown ? (
+                    <div className="text-zinc-400 text-sm animate-pulse">Loading...</div>
+                  ) : breakdown ? (
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                        <span>Human observations</span>
+                        <span className="tabular-nums">{breakdown.humanObservation.toLocaleString()}</span>
+                      </div>
+                      {breakdown.iNaturalist > 0 && (
+                        <div className="flex justify-between text-zinc-500 dark:text-zinc-400 pl-3 text-xs">
+                          <span>iNaturalist</span>
+                          <span className="tabular-nums">{breakdown.iNaturalist.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                        <span>Preserved specimens</span>
+                        <span className="tabular-nums">{breakdown.preservedSpecimen.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                        <span>Machine observations</span>
+                        <span className="tabular-nums">{breakdown.machineObservation.toLocaleString()}</span>
+                      </div>
+                      {breakdown.other > 0 && (
+                        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+                          <span>Other</span>
+                          <span className="tabular-nums">{breakdown.other.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="border-t border-zinc-200 dark:border-zinc-700 pt-1 mt-1 flex justify-between font-medium text-zinc-700 dark:text-zinc-300">
+                        <span>Total</span>
+                        <span className="tabular-nums">{breakdown.total?.toLocaleString() || (breakdown.humanObservation + breakdown.preservedSpecimen + breakdown.machineObservation + breakdown.other).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* iNaturalist photos grid */}
+                {breakdown?.recentInatObservations && breakdown.recentInatObservations.length > 0 && (
+                  <div className="p-3 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 flex-1 overflow-visible">
+                    <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2 flex items-center gap-2">
+                      <span>iNaturalist</span>
+                      <span className="text-zinc-400 text-xs">({breakdown.inatTotalCount?.toLocaleString() || breakdown.iNaturalist.toLocaleString()} total)</span>
+                    </div>
+                    <div className="grid grid-cols-5 gap-1 overflow-visible">
+                      {breakdown.recentInatObservations.map((obs, idx) => (
+                        <InatPhotoWithPreview key={idx} obs={obs} idx={idx} />
+                      ))}
+                    </div>
                   </div>
                 )}
-                <div className="flex items-center gap-3 ml-auto text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-blue-500 border-2 border-blue-700" />
-                    <span className="text-zinc-500">GBIF record</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div
-                      className="w-12 h-3 rounded"
-                      style={{
-                        background:
-                          "linear-gradient(to right, rgb(180,180,180), rgb(220,38,38))",
-                      }}
-                    />
-                    <span className="text-zinc-500">Low → High prob</span>
-                  </div>
-                </div>
               </div>
-            )}
 
-            {/* Map */}
-            <div className="h-[300px] md:h-[400px] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 relative">
+              {/* Right column: Map + controls (2/3 width) */}
+              <div className="lg:w-2/3 flex flex-col gap-2">
+                {/* Controls for candidates */}
+                {hasCandidates && (
+                  <div className="flex flex-wrap items-center gap-4 p-2 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showCandidates}
+                        onChange={(e) => setShowCandidates(e.target.checked)}
+                        className="w-4 h-4 rounded accent-orange-500"
+                      />
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                        Show heatmap ({loadingCandidates ? "..." : candidates.length}{" "}
+                        points)
+                      </span>
+                    </label>
+                    {showCandidates && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-zinc-500">Opacity:</span>
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="1"
+                          step="0.1"
+                          value={heatmapOpacity}
+                          onChange={(e) => setHeatmapOpacity(parseFloat(e.target.value))}
+                          className="w-20 accent-orange-500"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 ml-auto text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full bg-blue-500 border-2 border-blue-700" />
+                        <span className="text-zinc-500">GBIF record</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div
+                          className="w-12 h-3 rounded"
+                          style={{
+                            background:
+                              "linear-gradient(to right, rgb(180,180,180), rgb(220,38,38))",
+                          }}
+                        />
+                        <span className="text-zinc-500">Low → High prob</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Map */}
+                <div className="h-[300px] md:h-[400px] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 relative isolate z-0">
               {loadingOccurrences ? (
                 <div className="flex items-center justify-center h-full bg-zinc-100 dark:bg-zinc-800">
                   <div className="text-zinc-400">Loading occurrences...</div>
@@ -295,6 +471,8 @@ export default function OccurrenceMapRow({
                     ` • ${candidates.length} predictions`}
                 </div>
               )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
