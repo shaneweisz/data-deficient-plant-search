@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import {
   BarChart,
@@ -183,6 +184,88 @@ function InatObservationPreview({
         {obs.location && <div className="truncate text-zinc-400">{obs.location}</div>}
       </div>
     </div>
+  );
+}
+
+// GBIF breakdown popup with portal and smart positioning
+function GbifBreakdownPopup({
+  children,
+  trigger,
+}: {
+  children: React.ReactNode;
+  trigger: React.ReactNode;
+  speciesId?: number;
+  inatIndex?: Record<number, number>;
+  setInatIndex?: React.Dispatch<React.SetStateAction<Record<number, number>>>;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0, showBelow: false });
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 150); // Small delay to allow moving to popup
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isHovered && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const popupHeight = 200; // Approximate popup height
+      const spaceAbove = rect.top;
+      const showBelow = spaceAbove < popupHeight + 20;
+
+      setPosition({
+        top: showBelow ? rect.bottom : rect.top,
+        left: rect.right,
+        showBelow,
+      });
+    }
+  }, [isHovered]);
+
+  return (
+    <span
+      ref={triggerRef}
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {trigger}
+      {isHovered && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[99999]"
+          style={{
+            top: position.top,
+            left: position.left,
+            transform: position.showBelow ? 'translateX(-100%)' : 'translateX(-100%) translateY(-100%)',
+            paddingTop: position.showBelow ? '4px' : undefined,
+            paddingBottom: position.showBelow ? undefined : '4px',
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {children}
+        </div>,
+        document.body
+      )}
+    </span>
   );
 }
 
@@ -1063,105 +1146,94 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         <span className="text-zinc-400 animate-pulse">...</span>
                       ) : details?.gbifOccurrences != null && details?.gbifUrl ? (() => {
                         const recordsAtAssessment = details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0);
+                        // Calculate pre-assessment counts by subtracting new records
+                        const newByType = details.gbifNewByRecordType || { humanObservation: 0, preservedSpecimen: 0, machineObservation: 0, other: 0, iNaturalist: 0 };
+                        const preAssessmentHuman = details.gbifByRecordType ? details.gbifByRecordType.humanObservation - newByType.humanObservation : 0;
+                        const preAssessmentSpecimen = details.gbifByRecordType ? details.gbifByRecordType.preservedSpecimen - newByType.preservedSpecimen : 0;
+                        const preAssessmentMachine = details.gbifByRecordType ? details.gbifByRecordType.machineObservation - newByType.machineObservation : 0;
+                        const preAssessmentOther = details.gbifByRecordType ? details.gbifByRecordType.other - newByType.other : 0;
+                        const preAssessmentInat = details.gbifByRecordType ? (details.gbifByRecordType.iNaturalist || 0) - (newByType.iNaturalist || 0) : 0;
                         return (
-                        <span className="relative group/gbif">
-                          <a
-                            href={assessmentYear ? `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {recordsAtAssessment.toLocaleString()}
-                          </a>
-                          {details?.gbifByRecordType && (() => {
-                            // Calculate pre-assessment counts by subtracting new records
-                            const newByType = details.gbifNewByRecordType || { humanObservation: 0, preservedSpecimen: 0, machineObservation: 0, other: 0, iNaturalist: 0 };
-                            const preAssessmentHuman = details.gbifByRecordType.humanObservation - newByType.humanObservation;
-                            const preAssessmentSpecimen = details.gbifByRecordType.preservedSpecimen - newByType.preservedSpecimen;
-                            const preAssessmentMachine = details.gbifByRecordType.machineObservation - newByType.machineObservation;
-                            const preAssessmentOther = details.gbifByRecordType.other - newByType.other;
-                            const preAssessmentInat = (details.gbifByRecordType.iNaturalist || 0) - (newByType.iNaturalist || 0);
-                            return (
-                            <div className="absolute right-0 bottom-full z-10 hidden group-hover/gbif:block pb-2 pr-2 -mr-2">
-                              <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
-                                <div className="text-zinc-300 font-medium mb-1">{assessmentYear ? `Up to ${assessmentYear}:` : 'Breakdown by type:'}</div>
-                                <div className="space-y-0.5 text-zinc-400">
-                                  <div className="flex justify-between">
-                                    <span>Human observations</span>
-                                    <a
-                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {preAssessmentHuman.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  {preAssessmentInat > 0 && details.recentInatObservations.length > 0 && (
-                                    <div className="flex justify-between pl-3 text-[11px]">
-                                      <span className="relative group/inat">
-                                        <span className="text-amber-400 hover:text-amber-300 cursor-pointer">iNaturalist</span>
-                                        <div className="absolute right-0 bottom-full z-20 hidden group-hover/inat:block pb-2">
-                                          <InatObservationPreview
-                                            observations={details.recentInatObservations}
-                                            currentIndex={inatIndex[s.sis_taxon_id] || 0}
-                                            onNavigate={(delta) => setInatIndex(prev => ({
-                                              ...prev,
-                                              [s.sis_taxon_id]: Math.max(0, Math.min(details.recentInatObservations.length - 1, (prev[s.sis_taxon_id] || 0) + delta))
-                                            }))}
-                                            totalCount={details.inatTotalCount}
-                                          />
-                                        </div>
-                                      </span>
-                                      <a
-                                        href={assessmentYear ? `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-zinc-300 hover:text-amber-400 hover:underline tabular-nums"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        {preAssessmentInat.toLocaleString()}
-                                      </a>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between">
-                                    <span>Preserved specimens</span>
-                                    <a
-                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {preAssessmentSpecimen.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Machine observations</span>
-                                    <a
-                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {preAssessmentMachine.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  {preAssessmentOther > 0 && (
-                                    <div className="flex justify-between">
-                                      <span>Other</span>
-                                      <span className="text-zinc-200 tabular-nums">{preAssessmentOther.toLocaleString()}</span>
-                                    </div>
-                                  )}
+                        <GbifBreakdownPopup
+                          speciesId={s.sis_taxon_id}
+                          inatIndex={inatIndex}
+                          setInatIndex={setInatIndex}
+                          trigger={
+                            <a
+                              href={assessmentYear ? `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {recordsAtAssessment.toLocaleString()}
+                            </a>
+                          }
+                        >
+                          {details?.gbifByRecordType && (
+                            <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
+                              <div className="text-zinc-300 font-medium mb-1">{assessmentYear && assessmentMonth ? `Up to ${new Date(assessmentYear, assessmentMonth - 1).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}:` : assessmentYear ? `Up to ${assessmentYear}:` : 'Breakdown by type:'}</div>
+                              <div className="space-y-0.5 text-zinc-400">
+                                <div className="flex justify-between">
+                                  <span>Human observations</span>
+                                  <a
+                                    href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {preAssessmentHuman.toLocaleString()}
+                                  </a>
                                 </div>
+                                {preAssessmentInat > 0 && details.recentInatObservations.length > 0 && (
+                                  <div className="flex justify-between pl-3 text-[11px]">
+                                    <span>iNaturalist</span>
+                                    <a
+                                      href={assessmentYear ? `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-zinc-300 hover:text-amber-400 hover:underline tabular-nums"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {preAssessmentInat.toLocaleString()}
+                                    </a>
+                                  </div>
+                                )}
+                                <div className="flex justify-between">
+                                  <span>Preserved specimens</span>
+                                  <a
+                                    href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {preAssessmentSpecimen.toLocaleString()}
+                                  </a>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Machine observations</span>
+                                  <a
+                                    href={assessmentYear ? `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=*,${assessmentYear}` : `https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {preAssessmentMachine.toLocaleString()}
+                                  </a>
+                                </div>
+                                {preAssessmentOther > 0 && (
+                                  <div className="flex justify-between">
+                                    <span>Other</span>
+                                    <span className="text-zinc-200 tabular-nums">{preAssessmentOther.toLocaleString()}</span>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            );
-                          })()}
-                        </span>
+                          )}
+                        </GbifBreakdownPopup>
                         );
                       })() : details?.gbifOccurrences != null ? (
                         (details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0)).toLocaleString()
@@ -1171,96 +1243,87 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                       {details === undefined ? (
                         <span className="text-zinc-400 animate-pulse">...</span>
                       ) : details?.gbifOccurrencesSinceAssessment != null && details?.gbifUrl && assessmentYear ? (
-                        <span className="relative group/newgbif">
-                          <a
-                            href={`https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
-                            title={assessmentMonth ? `Data count includes ${assessmentYear} from month ${assessmentMonth + 1} onwards` : undefined}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {details.gbifOccurrencesSinceAssessment.toLocaleString()}
-                          </a>
+                        <GbifBreakdownPopup
+                          speciesId={s.sis_taxon_id}
+                          inatIndex={inatIndex}
+                          setInatIndex={setInatIndex}
+                          trigger={
+                            <a
+                              href={`https://www.gbif.org/occurrence/search?taxon_key=${details.gbifUrl.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
+                              title={assessmentMonth ? `Data count includes ${assessmentYear} from month ${assessmentMonth + 1} onwards` : undefined}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {details.gbifOccurrencesSinceAssessment.toLocaleString()}
+                            </a>
+                          }
+                        >
                           {details?.gbifNewByRecordType && (
-                            <div className="absolute right-0 bottom-full z-10 hidden group-hover/newgbif:block pb-2 pr-2 -mr-2">
-                              <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
-                                <div className="text-zinc-300 font-medium mb-1">After {assessmentYear}:</div>
-                                <div className="space-y-0.5 text-zinc-400">
-                                  <div className="flex justify-between">
-                                    <span>Human observations</span>
-                                    <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {details.gbifNewByRecordType.humanObservation.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  {details.gbifNewByRecordType.iNaturalist != null && details.gbifNewByRecordType.iNaturalist > 0 && details.recentInatObservations.length > 0 && (
-                                    <div className="flex justify-between pl-3 text-[11px]">
-                                      <span className="relative group/inat2">
-                                        <span className="text-amber-400 hover:text-amber-300 cursor-pointer">iNaturalist</span>
-                                        <div className="absolute right-0 bottom-full z-20 hidden group-hover/inat2:block pb-2">
-                                          <InatObservationPreview
-                                            observations={details.recentInatObservations}
-                                            currentIndex={inatIndex[s.sis_taxon_id] || 0}
-                                            onNavigate={(delta) => setInatIndex(prev => ({
-                                              ...prev,
-                                              [s.sis_taxon_id]: Math.max(0, Math.min(details.recentInatObservations.length - 1, (prev[s.sis_taxon_id] || 0) + delta))
-                                            }))}
-                                            totalCount={details.inatTotalCount}
-                                          />
-                                        </div>
-                                      </span>
-                                      <a
-                                        href={`https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-zinc-300 hover:text-amber-400 hover:underline tabular-nums"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        {details.gbifNewByRecordType.iNaturalist.toLocaleString()}
-                                      </a>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between">
-                                    <span>Preserved specimens</span>
-                                    <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {details.gbifNewByRecordType.preservedSpecimen.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Machine observations</span>
-                                    <a
-                                      href={`https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      {details.gbifNewByRecordType.machineObservation.toLocaleString()}
-                                    </a>
-                                  </div>
-                                  {details.gbifNewByRecordType.other > 0 && (
-                                    <div className="flex justify-between">
-                                      <span>Other</span>
-                                      <span className="text-zinc-200 tabular-nums">{details.gbifNewByRecordType.other.toLocaleString()}</span>
-                                    </div>
-                                  )}
+                            <div className="bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-2 text-xs text-left min-w-[200px]">
+                              <div className="text-zinc-300 font-medium mb-1">After {assessmentMonth ? new Date(assessmentYear, assessmentMonth - 1).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : assessmentYear}:</div>
+                              <div className="space-y-0.5 text-zinc-400">
+                                <div className="flex justify-between">
+                                  <span>Human observations</span>
+                                  <a
+                                    href={`https://www.gbif.org/occurrence/search?basis_of_record=HUMAN_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {details.gbifNewByRecordType.humanObservation.toLocaleString()}
+                                  </a>
                                 </div>
+                                {details.gbifNewByRecordType.iNaturalist != null && details.gbifNewByRecordType.iNaturalist > 0 && (
+                                  <div className="flex justify-between pl-3 text-[11px]">
+                                    <span>iNaturalist</span>
+                                    <a
+                                      href={`https://www.gbif.org/occurrence/search?dataset_key=50c9509d-22c7-4a22-a47d-8c48425ef4a7&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-zinc-300 hover:text-amber-400 hover:underline tabular-nums"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      {details.gbifNewByRecordType.iNaturalist.toLocaleString()}
+                                    </a>
+                                  </div>
+                                )}
+                                <div className="flex justify-between">
+                                  <span>Preserved specimens</span>
+                                  <a
+                                    href={`https://www.gbif.org/occurrence/search?basis_of_record=PRESERVED_SPECIMEN&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {details.gbifNewByRecordType.preservedSpecimen.toLocaleString()}
+                                  </a>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Machine observations</span>
+                                  <a
+                                    href={`https://www.gbif.org/occurrence/search?basis_of_record=MACHINE_OBSERVATION&taxon_key=${details.gbifUrl?.split('/').pop()}&year=${assessmentYear + 1},${new Date().getFullYear()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-zinc-200 hover:text-blue-400 hover:underline tabular-nums"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {details.gbifNewByRecordType.machineObservation.toLocaleString()}
+                                  </a>
+                                </div>
+                                {details.gbifNewByRecordType.other > 0 && (
+                                  <div className="flex justify-between">
+                                    <span>Other</span>
+                                    <span className="text-zinc-200 tabular-nums">{details.gbifNewByRecordType.other.toLocaleString()}</span>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
-                        </span>
+                        </GbifBreakdownPopup>
                       ) : details?.gbifOccurrencesSinceAssessment != null ? (
                         details.gbifOccurrencesSinceAssessment.toLocaleString()
                       ) : "—"}
