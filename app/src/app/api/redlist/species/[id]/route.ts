@@ -113,6 +113,9 @@ export async function GET(
     let recentInatObservations: { url: string; date: string | null; imageUrl: string | null; location: string | null; observer: string | null }[] = [];
     let inatTotalCount = 0;
 
+    // Track GBIF match status to inform users of matching issues
+    let gbifMatchStatus: { matchType: string; matchedName?: string; matchedRank?: string } | null = null;
+
     const gbifIndex = 1;
     if (scientificName && responses[gbifIndex]?.ok) {
       const gbifMatch = await responses[gbifIndex].json();
@@ -120,6 +123,14 @@ export async function GET(
       // HIGHERRANK means it matched to a higher taxonomic rank (e.g., genus instead of species)
       // which would return occurrences for the entire genus, not the specific species
       const goodMatchTypes = ['EXACT', 'FUZZY', 'VARIANT'];
+
+      // Store match status for UI feedback
+      gbifMatchStatus = {
+        matchType: gbifMatch.matchType || 'NONE',
+        matchedName: gbifMatch.scientificName,
+        matchedRank: gbifMatch.rank,
+      };
+
       if (gbifMatch.usageKey && goodMatchTypes.includes(gbifMatch.matchType)) {
         gbifUrl = `https://www.gbif.org/species/${gbifMatch.usageKey}`;
         const taxonKey = gbifMatch.usageKey;
@@ -335,6 +346,7 @@ export async function GET(
       gbifOccurrencesSinceAssessment,
       gbifByRecordType,
       gbifNewByRecordType,
+      gbifMatchStatus,
       recentInatObservations,
       inatTotalCount,
       inatDefaultImage,

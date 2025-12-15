@@ -103,6 +103,12 @@ interface InatDefaultImage {
   mediumUrl: string | null;
 }
 
+interface GbifMatchStatus {
+  matchType: string;
+  matchedName?: string;
+  matchedRank?: string;
+}
+
 interface SpeciesDetails {
   criteria: string | null;
   commonName: string | null;
@@ -111,6 +117,7 @@ interface SpeciesDetails {
   gbifOccurrencesSinceAssessment: number | null;
   gbifByRecordType: GbifByRecordType | null;
   gbifNewByRecordType: GbifByRecordType | null;
+  gbifMatchStatus: GbifMatchStatus | null;
   recentInatObservations: InatObservation[];
   inatTotalCount: number;
   inatDefaultImage: InatDefaultImage | null;
@@ -184,6 +191,46 @@ function InatObservationPreview({
         {obs.location && <div className="truncate text-zinc-400">{obs.location}</div>}
       </div>
     </div>
+  );
+}
+
+// Quick hover tooltip using portal
+function HoverTooltip({ children, text }: { children: React.ReactNode; text: string }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (isHovered && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.top - 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  }, [isHovered]);
+
+  return (
+    <span
+      ref={triggerRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+      {isHovered && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[99999] px-2 py-1 text-xs bg-zinc-800 text-zinc-200 rounded shadow-lg max-w-[250px] text-center"
+          style={{
+            top: position.top,
+            left: position.left,
+            transform: 'translateX(-50%) translateY(-100%)',
+          }}
+        >
+          {text}
+        </div>,
+        document.body
+      )}
+    </span>
   );
 }
 
@@ -547,6 +594,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             gbifOccurrencesSinceAssessment: result.data.gbifOccurrencesSinceAssessment,
             gbifByRecordType: result.data.gbifByRecordType,
             gbifNewByRecordType: result.data.gbifNewByRecordType,
+            gbifMatchStatus: result.data.gbifMatchStatus || null,
             recentInatObservations: result.data.recentInatObservations || [],
             inatTotalCount: result.data.inatTotalCount || 0,
             inatDefaultImage: result.data.inatDefaultImage || null,
@@ -1237,6 +1285,14 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         );
                       })() : details?.gbifOccurrences != null ? (
                         (details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0)).toLocaleString()
+                      ) : details?.gbifMatchStatus?.matchType === 'HIGHERRANK' || details?.gbifMatchStatus?.matchType === 'NONE' ? (
+                        <HoverTooltip
+                          text={details.gbifMatchStatus.matchType === 'HIGHERRANK'
+                            ? `Name not found in GBIF (matched to ${details.gbifMatchStatus.matchedRank?.toLowerCase() || 'higher rank'} instead). May be due to a taxonomic split, synonym, or naming difference.`
+                            : "Species not found in GBIF. May be due to a taxonomic split, synonym, or naming difference."}
+                        >
+                          <span className="text-zinc-400 cursor-help">?</span>
+                        </HoverTooltip>
                       ) : "—"}
                     </td>
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
@@ -1326,6 +1382,14 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         </GbifBreakdownPopup>
                       ) : details?.gbifOccurrencesSinceAssessment != null ? (
                         details.gbifOccurrencesSinceAssessment.toLocaleString()
+                      ) : details?.gbifMatchStatus?.matchType === 'HIGHERRANK' || details?.gbifMatchStatus?.matchType === 'NONE' ? (
+                        <HoverTooltip
+                          text={details.gbifMatchStatus.matchType === 'HIGHERRANK'
+                            ? `Name not found in GBIF (matched to ${details.gbifMatchStatus.matchedRank?.toLowerCase() || 'higher rank'} instead). May be due to a taxonomic split, synonym, or naming difference.`
+                            : "Species not found in GBIF. May be due to a taxonomic split, synonym, or naming difference."}
+                        >
+                          <span className="text-zinc-400 cursor-help">?</span>
+                        </HoverTooltip>
                       ) : "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
