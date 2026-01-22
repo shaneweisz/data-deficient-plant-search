@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FaInfoCircle } from "react-icons/fa";
 import TaxaIcon from "@/components/TaxaIcon";
+
+const IUCN_SOURCE_URL = "https://nc.iucnredlist.org/redlist/content/attachment_files/2025-2_RL_Table1a.pdf";
 
 interface TaxonSummary {
   id: string;
@@ -100,7 +103,6 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
     percentAssessed: number,
     outdated: number,
     percentOutdated: number,
-    sourceUrl?: string,
     isSelected?: boolean
   ) => (
     <div
@@ -121,21 +123,9 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
 
         {/* Est. Described */}
         <div className="text-right">
-          {sourceUrl ? (
-            <a
-              href={sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-base font-medium text-blue-600 dark:text-blue-400 hover:underline tabular-nums"
-            >
-              {estimatedDescribed.toLocaleString()}
-            </a>
-          ) : (
-            <span className="text-base font-medium text-zinc-700 dark:text-zinc-300 tabular-nums">
-              {estimatedDescribed.toLocaleString()}
-            </span>
-          )}
+          <span className="text-base font-medium text-zinc-700 dark:text-zinc-300 tabular-nums">
+            {estimatedDescribed.toLocaleString()}
+          </span>
         </div>
 
         {/* Assessed */}
@@ -181,12 +171,28 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
     if (!taxon) return null;
 
     return (
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl">
         {/* Column headers */}
         <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
           <div className="grid grid-cols-6 gap-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">
             <div>Taxon</div>
-            <div className="text-right">Est. Described</div>
+            <div className="text-right flex items-center justify-end gap-1 overflow-visible">
+              Est. Described
+              <span className="relative group">
+                <a
+                  href={IUCN_SOURCE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                >
+                  <FaInfoCircle size={12} />
+                </a>
+                <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs text-white bg-zinc-800 dark:bg-zinc-700 rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50 shadow-lg normal-case">
+                  Source: IUCN Red List Table 1a (2025-2)
+                </span>
+              </span>
+            </div>
             <div className="text-right">Assessed</div>
             <div className="text-right">% Assessed</div>
             <div className="text-right">Outdated (10+y)</div>
@@ -203,7 +209,6 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
           taxon.percentAssessed,
           taxon.outdated,
           taxon.percentOutdated,
-          taxon.estimatedSourceUrl,
           true
         )}
       </div>
@@ -211,12 +216,28 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
   }
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl">
       {/* Column headers */}
       <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
         <div className="grid grid-cols-6 gap-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">
           <div>Taxon</div>
-          <div className="text-right">Est. Described</div>
+          <div className="text-right flex items-center justify-end gap-1 overflow-visible">
+              Est. Described
+              <span className="relative group">
+                <a
+                  href={IUCN_SOURCE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                >
+                  <FaInfoCircle size={12} />
+                </a>
+                <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs text-white bg-zinc-800 dark:bg-zinc-700 rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50 shadow-lg normal-case">
+                  Source: IUCN Red List Table 1a (2025-2)
+                </span>
+              </span>
+            </div>
           <div className="text-right">Assessed</div>
           <div className="text-right">% Assessed</div>
           <div className="text-right">Outdated (10+y)</div>
@@ -235,7 +256,6 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
           totalPercentAssessed,
           totalOutdated,
           totalPercentOutdated,
-          undefined,
           isAllSelected
         )}
       </div>
@@ -274,22 +294,9 @@ export default function TaxaSummary({ onSelectTaxon, selectedTaxon }: Props) {
 
                   {/* Est. Described */}
                   <div className="text-right">
-                    {taxon.estimatedSourceUrl ? (
-                      <a
-                        href={taxon.estimatedSourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-base font-medium text-blue-600 dark:text-blue-400 hover:underline tabular-nums"
-                        title={`Source: ${taxon.estimatedSource}`}
-                      >
-                        {taxon.estimatedDescribed.toLocaleString()}
-                      </a>
-                    ) : (
-                      <span className="text-base font-medium text-zinc-700 dark:text-zinc-300 tabular-nums">
-                        {taxon.estimatedDescribed.toLocaleString()}
-                      </span>
-                    )}
+                    <span className="text-base font-medium text-zinc-700 dark:text-zinc-300 tabular-nums">
+                      {taxon.estimatedDescribed.toLocaleString()}
+                    </span>
                   </div>
 
                   {/* Assessed */}
