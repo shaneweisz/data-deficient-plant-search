@@ -357,7 +357,6 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   // Filters (multi-select using Sets)
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedYearRanges, setSelectedYearRanges] = useState<Set<string>>(new Set());
-  const [selectedAssessmentCounts, setSelectedAssessmentCounts] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sorting
@@ -439,7 +438,6 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   useEffect(() => {
     setSelectedCategories(new Set());
     setSelectedYearRanges(new Set());
-    setSelectedAssessmentCounts(new Set());
     setSearchQuery("");
     setCurrentPage(1);
     setSpeciesDetails({});
@@ -466,42 +464,14 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
     return false;
   };
 
-  // Helper to check if species matches assessment count filter
-  const matchesAssessmentCountFilter = (count: number): boolean => {
-    if (selectedAssessmentCounts.size === 0) return true;
-    // Check if matches ANY of the selected counts
-    for (const selected of selectedAssessmentCounts) {
-      switch (selected) {
-        case "1": if (count === 1) return true; break;
-        case "2": if (count === 2) return true; break;
-        case "3": if (count === 3) return true; break;
-        case "4+": if (count >= 4) return true; break;
-      }
-    }
-    return false;
-  };
-
-  // Filter species based on category, year range, assessment count, and search
+  // Filter species based on category, year range, and search
   const filteredSpecies = species.filter((s) => {
     const matchesCategory = selectedCategories.size === 0 || selectedCategories.has(s.category);
     const matchesYear = matchesYearRangeFilter(s.assessment_date);
-    const matchesAssessment = matchesAssessmentCountFilter(s.assessment_count);
     const matchesSearch = !searchQuery ||
       s.scientific_name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesYear && matchesAssessment && matchesSearch;
+    return matchesCategory && matchesYear && matchesSearch;
   });
-
-  // Calculate reassessment distribution from species data
-  const totalSpecies = species.length;
-  const reassessmentDistribution = [
-    { range: "1", count: species.filter(s => s.assessment_count === 1).length },
-    { range: "2", count: species.filter(s => s.assessment_count === 2).length },
-    { range: "3", count: species.filter(s => s.assessment_count === 3).length },
-    { range: "4+", count: species.filter(s => s.assessment_count >= 4).length },
-  ].map(item => ({
-    ...item,
-    label: `${item.count.toLocaleString()} (${totalSpecies > 0 ? ((item.count / totalSpecies) * 100).toFixed(1) : 0}%)`
-  }));
 
   // Category order for sorting (most threatened first)
   const CATEGORY_ORDER: Record<string, number> = {
@@ -551,7 +521,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategories, selectedYearRanges, selectedAssessmentCounts, searchQuery]);
+  }, [selectedCategories, selectedYearRanges, searchQuery]);
 
   // Fetch details for visible species
   useEffect(() => {
@@ -660,29 +630,6 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
     });
   };
 
-  // Handle assessment count bar click (Cmd/Ctrl+click for multi-select, regular click replaces)
-  const handleAssessmentCountClick = (data: { payload?: { range?: string } }, event: React.MouseEvent) => {
-    const range = data.payload?.range;
-    if (!range) return;
-    const isMultiSelect = event.metaKey || event.ctrlKey;
-    setSelectedAssessmentCounts(prev => {
-      if (isMultiSelect) {
-        const next = new Set(prev);
-        if (next.has(range)) {
-          next.delete(range);
-        } else {
-          next.add(range);
-        }
-        return next;
-      } else {
-        if (prev.size === 1 && prev.has(range)) {
-          return new Set();
-        }
-        return new Set([range]);
-      }
-    });
-  };
-
   // Render loading state for details section
   const renderDetailsLoading = () => (
     <div className="flex flex-col items-center justify-center py-12">
@@ -741,74 +688,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
           {/* Details content */}
           {!loading && !error && stats && assessments && taxonInfo && (
             <>
-              {/* Three charts side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Number of Assessments chart - horizontal bars */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              # of Assessments <span className="font-normal text-zinc-400">(click to filter)</span>
-            </h3>
-            {selectedAssessmentCounts.size > 0 && (
-              <button
-                onClick={() => setSelectedAssessmentCounts(new Set())}
-                className="text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-          <div className="flex-1 min-h-[130px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={reassessmentDistribution}
-                layout="vertical"
-                margin={{ top: 5, right: 85, left: 5, bottom: 5 }}
-                barCategoryGap={4}
-              >
-                <XAxis type="number" hide />
-                <YAxis
-                  type="category"
-                  dataKey="range"
-                  tick={{ fontSize: 11, fill: "#a1a1aa" }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={26}
-                />
-                <Tooltip
-                  formatter={(value: number) => [value, "Species"]}
-                  contentStyle={{
-                    backgroundColor: "#18181b",
-                    border: "1px solid #3f3f46",
-                    borderRadius: "8px",
-                  }}
-                  itemStyle={{ color: "#fff" }}
-                  labelStyle={{ color: "#a1a1aa" }}
-                />
-                <Bar
-                  dataKey="count"
-                  radius={[0, 4, 4, 0]}
-                  cursor="pointer"
-                  onClick={(data, _index, event) => handleAssessmentCountClick(data, event)}
-                >
-                  {reassessmentDistribution.map((entry, index) => (
-                    <Cell
-                      key={`assessment-cell-${index}`}
-                      fill="#8b5cf6"
-                      opacity={selectedAssessmentCounts.size > 0 && !selectedAssessmentCounts.has(entry.range) ? 0.3 : 1}
-                    />
-                  ))}
-                  <LabelList
-                    dataKey="label"
-                    position="right"
-                    style={{ fontSize: 11, fill: "#a1a1aa" }}
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
+              {/* Two charts side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Years Since Assessment chart - horizontal bars */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 flex flex-col">
           <div className="flex items-center justify-between mb-1">
@@ -993,19 +874,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 <span className="text-xs">×</span>
               </button>
             ))}
-            {Array.from(selectedAssessmentCounts).map(count => (
+            {(selectedCategories.size > 0 || selectedYearRanges.size > 0) && (
               <button
-                key={count}
-                onClick={() => setSelectedAssessmentCounts(prev => { const next = new Set(prev); next.delete(count); return next; })}
-                className="px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 flex items-center gap-1 hover:opacity-80"
-              >
-                {count} assessment{count !== "1" ? "s" : ""}
-                <span className="text-xs">×</span>
-              </button>
-            ))}
-            {(selectedCategories.size > 0 || selectedYearRanges.size > 0 || selectedAssessmentCounts.size > 0) && (
-              <button
-                onClick={() => { setSelectedCategories(new Set()); setSelectedYearRanges(new Set()); setSelectedAssessmentCounts(new Set()); }}
+                onClick={() => { setSelectedCategories(new Set()); setSelectedYearRanges(new Set()); }}
                 className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline"
               >
                 Clear all
