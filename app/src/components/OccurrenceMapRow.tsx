@@ -93,6 +93,7 @@ interface OccurrenceMapRowProps {
   mounted: boolean;
   colSpan: number;
   hasCandidates?: boolean;
+  assessmentYear?: number | null;
 }
 
 // iNat photo thumbnail with hover preview using portal
@@ -189,6 +190,7 @@ export default function OccurrenceMapRow({
   mounted,
   colSpan,
   hasCandidates,
+  assessmentYear,
 }: OccurrenceMapRowProps) {
   const [occurrences, setOccurrences] = useState<OccurrenceFeature[]>([]);
   const [candidates, setCandidates] = useState<CandidateFeature[]>([]);
@@ -197,6 +199,7 @@ export default function OccurrenceMapRow({
   const [loadingCandidates, setLoadingCandidates] = useState(false);
   const [loadingBreakdown, setLoadingBreakdown] = useState(true);
   const [showCandidates, setShowCandidates] = useState(true);
+  const [showPreservedSpecimens, setShowPreservedSpecimens] = useState(false);
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.7);
 
   // Total occurrences count (from API metadata)
@@ -257,6 +260,28 @@ export default function OccurrenceMapRow({
     (a, b) => a.properties.probability - b.properties.probability
   );
 
+  // Helper to check if a record is a preserved specimen or material sample
+  const isPreserved = (basisOfRecord?: string): boolean => {
+    return basisOfRecord === "PRESERVED_SPECIMEN" || basisOfRecord === "MATERIAL_SAMPLE";
+  };
+
+  // Filter occurrences to exclude preserved specimens and material samples when toggle is off
+  const filteredOccurrences = showPreservedSpecimens
+    ? occurrences
+    : occurrences.filter((o) => !isPreserved(o.properties.basisOfRecord));
+
+  // Helper to check if an occurrence is after the assessment year
+  const isNewRecord = (eventDate?: string): boolean => {
+    if (!assessmentYear || !eventDate) return false;
+    const recordYear = new Date(eventDate).getFullYear();
+    return recordYear > assessmentYear;
+  };
+
+  // Count by category for the legend
+  const preservedRecords = filteredOccurrences.filter((o) => isPreserved(o.properties.basisOfRecord));
+  const newRecords = filteredOccurrences.filter((o) => !isPreserved(o.properties.basisOfRecord) && isNewRecord(o.properties.eventDate));
+  const oldRecords = filteredOccurrences.filter((o) => !isPreserved(o.properties.basisOfRecord) && !isNewRecord(o.properties.eventDate));
+
   return (
     <tr className="overflow-visible">
       <td colSpan={colSpan} className="p-0 overflow-visible">
@@ -268,7 +293,18 @@ export default function OccurrenceMapRow({
               <div className="lg:w-1/3 flex flex-col gap-3 overflow-visible relative z-10">
                 {/* Observation type breakdown */}
                 <div className="p-3 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                  <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Observation Types</div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Observation Types</div>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showPreservedSpecimens}
+                        onChange={(e) => setShowPreservedSpecimens(e.target.checked)}
+                        className="w-3.5 h-3.5 rounded accent-blue-500"
+                      />
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400">Include preserved specimens/samples</span>
+                    </label>
+                  </div>
                   {loadingBreakdown ? (
                     <div className="text-zinc-400 text-sm animate-pulse">Loading...</div>
                   ) : breakdown ? (() => {
@@ -449,17 +485,22 @@ export default function OccurrenceMapRow({
                         </CircleMarker>
                       );
                     })}
-                  {/* Render occurrences on top with distinct style */}
-                  {occurrences.map((feature, idx) => {
+                  {/* Render occurrences: preserved (amber), old observations (grey), new observations (green) */}
+                  {filteredOccurrences.map((feature, idx) => {
                     const [lon, lat] = feature.geometry.coordinates;
+                    const preserved = isPreserved(feature.properties.basisOfRecord);
+                    const isNew = isNewRecord(feature.properties.eventDate);
+                    // Color: preserved=amber, new=green, old=grey
+                    const strokeColor = preserved ? "#b45309" : isNew ? "#15803d" : "#6b7280";
+                    const fillColor = preserved ? "#f59e0b" : isNew ? "#22c55e" : "#9ca3af";
                     return (
                       <CircleMarker
                         key={feature.properties.gbifID || idx}
                         center={[lat, lon]}
                         radius={5}
                         pathOptions={{
-                          color: "#1d4ed8",
-                          fillColor: "#3b82f6",
+                          color: strokeColor,
+                          fillColor: fillColor,
                           fillOpacity: 0.9,
                           weight: 2,
                         }}
@@ -498,13 +539,35 @@ export default function OccurrenceMapRow({
                 </MapContainer>
               ) : null}
               {!loadingOccurrences && (
-                <div className="absolute bottom-2 left-2 bg-white dark:bg-zinc-800 px-2 py-1 rounded text-xs text-zinc-600 dark:text-zinc-300 shadow">
-                  {totalOccurrences && totalOccurrences > occurrences.length
-                    ? `${occurrences.length} of ${totalOccurrences.toLocaleString()} occurrences`
-                    : `${occurrences.length} occurrences`}
+                <div className="absolute bottom-2 left-2 z-[1000] bg-white dark:bg-zinc-800 px-2 py-1.5 rounded text-xs text-zinc-600 dark:text-zinc-300 shadow flex items-center gap-3">
+                  {/* Legend */}
+                  {assessmentYear ? (
+                    <>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full bg-gray-400 border-2 border-gray-500" />
+                        <span>≤{assessmentYear} ({oldRecords.length})</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full bg-green-500 border-2 border-green-700" />
+                        <span>New since {assessmentYear} ({newRecords.length})</span>
+                      </div>
+                      {showPreservedSpecimens && preservedRecords.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-full bg-amber-500 border-2 border-amber-700" />
+                          <span>Preserved ({preservedRecords.length})</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <span>
+                      {totalOccurrences && totalOccurrences > occurrences.length
+                        ? `${filteredOccurrences.length} of ${totalOccurrences.toLocaleString()} occurrences`
+                        : `${filteredOccurrences.length} occurrences`}
+                    </span>
+                  )}
                   {hasCandidates &&
                     showCandidates &&
-                    ` • ${candidates.length} predictions`}
+                    <span>• {candidates.length} predictions</span>}
                 </div>
               )}
                 </div>

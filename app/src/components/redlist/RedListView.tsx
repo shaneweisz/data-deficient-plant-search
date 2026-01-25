@@ -1113,6 +1113,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                         const preAssessmentMachine = details.gbifByRecordType ? details.gbifByRecordType.machineObservation - newByType.machineObservation : 0;
                         const preAssessmentOther = details.gbifByRecordType ? details.gbifByRecordType.other - newByType.other : 0;
                         const preAssessmentInat = details.gbifByRecordType ? (details.gbifByRecordType.iNaturalist || 0) - (newByType.iNaturalist || 0) : 0;
+                        // Exclude preserved specimens from the displayed count
+                        const recordsAtAssessmentExclSpecimens = recordsAtAssessment - preAssessmentSpecimen;
                         return (
                         <GbifBreakdownPopup
                           speciesId={s.sis_taxon_id}
@@ -1126,7 +1128,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                               className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline decoration-dotted hover:decoration-solid"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {recordsAtAssessment.toLocaleString()}
+                              {recordsAtAssessmentExclSpecimens.toLocaleString()}
                             </a>
                           }
                         >
@@ -1195,9 +1197,13 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                           )}
                         </GbifBreakdownPopup>
                         );
-                      })() : details?.gbifOccurrences != null ? (
-                        (details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0)).toLocaleString()
-                      ) : details?.gbifMatchStatus?.matchType === 'HIGHERRANK' || details?.gbifMatchStatus?.matchType === 'NONE' ? (
+                      })() : details?.gbifOccurrences != null ? (() => {
+                        const totalRecords = details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0);
+                        const preSpecimen = details.gbifByRecordType?.preservedSpecimen
+                          ? details.gbifByRecordType.preservedSpecimen - (details.gbifNewByRecordType?.preservedSpecimen ?? 0)
+                          : 0;
+                        return (totalRecords - preSpecimen).toLocaleString();
+                      })() : details?.gbifMatchStatus?.matchType === 'HIGHERRANK' || details?.gbifMatchStatus?.matchType === 'NONE' ? (
                         <HoverTooltip
                           text={details.gbifMatchStatus.matchType === 'HIGHERRANK'
                             ? `Name not found in GBIF (matched to ${details.gbifMatchStatus.matchedRank?.toLowerCase() || 'higher rank'} instead). May be due to a taxonomic split, synonym, or naming difference.`
@@ -1210,7 +1216,11 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
                         <span className="text-zinc-400 animate-pulse">...</span>
-                      ) : details?.gbifOccurrencesSinceAssessment != null && details?.gbifUrl && assessmentYear ? (
+                      ) : details?.gbifOccurrencesSinceAssessment != null && details?.gbifUrl && assessmentYear ? (() => {
+                        // Exclude preserved specimens from new records count
+                        const newSpecimens = details.gbifNewByRecordType?.preservedSpecimen ?? 0;
+                        const newRecordsExclSpecimens = details.gbifOccurrencesSinceAssessment - newSpecimens;
+                        return (
                         <GbifBreakdownPopup
                           speciesId={s.sis_taxon_id}
                           inatIndex={inatIndex}
@@ -1224,7 +1234,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                               title={assessmentMonth ? `Data count includes ${assessmentYear} from month ${assessmentMonth + 1} onwards` : undefined}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {details.gbifOccurrencesSinceAssessment.toLocaleString()}
+                              {newRecordsExclSpecimens.toLocaleString()}
                             </a>
                           }
                         >
@@ -1292,8 +1302,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                             </div>
                           )}
                         </GbifBreakdownPopup>
-                      ) : details?.gbifOccurrencesSinceAssessment != null ? (
-                        details.gbifOccurrencesSinceAssessment.toLocaleString()
+                        );
+                      })() : details?.gbifOccurrencesSinceAssessment != null ? (
+                        (details.gbifOccurrencesSinceAssessment - (details.gbifNewByRecordType?.preservedSpecimen ?? 0)).toLocaleString()
                       ) : details?.gbifMatchStatus?.matchType === 'HIGHERRANK' || details?.gbifMatchStatus?.matchType === 'NONE' ? (
                         <HoverTooltip
                           text={details.gbifMatchStatus.matchType === 'HIGHERRANK'
@@ -1361,6 +1372,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                           speciesName={s.scientific_name.toLowerCase()}
                           mounted={mounted}
                           colSpan={9}
+                          assessmentYear={assessmentYear}
                         />
                       )}
                       {assessmentYear && (
