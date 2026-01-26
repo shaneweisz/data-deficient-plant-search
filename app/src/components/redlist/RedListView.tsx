@@ -1103,7 +1103,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     </td>
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
-                        <span className="text-zinc-400 animate-pulse">...</span>
+                        <span className="inline-block animate-spin h-4 w-4 border-2 border-zinc-400 border-t-transparent rounded-full" />
                       ) : details?.gbifOccurrences != null && details?.gbifUrl ? (() => {
                         const recordsAtAssessment = details.gbifOccurrences - (details.gbifOccurrencesSinceAssessment ?? 0);
                         // Calculate pre-assessment counts by subtracting new records
@@ -1215,7 +1215,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     </td>
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
-                        <span className="text-zinc-400 animate-pulse">...</span>
+                        <span className="inline-block animate-spin h-4 w-4 border-2 border-zinc-400 border-t-transparent rounded-full" />
                       ) : details?.gbifOccurrencesSinceAssessment != null && details?.gbifUrl && assessmentYear ? (() => {
                         // Exclude preserved specimens from new records count
                         const newSpecimens = details.gbifNewByRecordType?.preservedSpecimen ?? 0;
@@ -1318,7 +1318,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     {/* Papers When Assessed */}
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
-                        <span className="text-zinc-400 animate-pulse">...</span>
+                        <span className="inline-block animate-spin h-4 w-4 border-2 border-zinc-400 border-t-transparent rounded-full" />
                       ) : details?.papersAtAssessment != null && assessmentYear ? (
                         <a
                           href={`https://openalex.org/works?page=1&filter=default.search%3A%22${encodeURIComponent(s.scientific_name)}%22,publication_year%3A%3C%3D${assessmentYear},type%3A%21dataset&sort=publication_date%3Adesc`}
@@ -1335,7 +1335,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                     {/* New Papers */}
                     <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 text-sm tabular-nums">
                       {details === undefined ? (
-                        <span className="text-zinc-400 animate-pulse">...</span>
+                        <span className="inline-block animate-spin h-4 w-4 border-2 border-zinc-400 border-t-transparent rounded-full" />
                       ) : details?.openAlexPaperCount != null && assessmentYear ? (
                         <a
                           href={`https://openalex.org/works?page=1&filter=default.search%3A%22${encodeURIComponent(s.scientific_name)}%22,publication_year%3A%3E${assessmentYear},type%3A%21dataset&sort=publication_date%3Adesc`}
