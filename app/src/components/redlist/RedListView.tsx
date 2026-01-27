@@ -395,6 +395,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedYearRanges, setSelectedYearRanges] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
+  const [showOnlyStarred, setShowOnlyStarred] = useState(false);
 
   // Sorting
   type SortField = "year" | "category" | null;
@@ -538,7 +539,8 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
     const matchesYear = matchesYearRangeFilter(s.assessment_date);
     const matchesSearch = !searchQuery ||
       s.scientific_name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesYear && matchesSearch;
+    const matchesStarred = !showOnlyStarred || pinnedSpecies.has(s.sis_taxon_id);
+    return matchesCategory && matchesYear && matchesSearch && matchesStarred;
   });
 
   // Category order for sorting (most threatened first)
@@ -548,13 +550,6 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
 
   // Sort filtered species
   const sortedSpecies = [...filteredSpecies].sort((a, b) => {
-    // Pinned species always come first
-    const aPinned = pinnedSpecies.has(a.sis_taxon_id);
-    const bPinned = pinnedSpecies.has(b.sis_taxon_id);
-    if (aPinned && !bPinned) return -1;
-    if (!aPinned && bPinned) return 1;
-
-    // Then apply regular sorting
     if (!sortField) return 0;
 
     let comparison = 0;
@@ -946,6 +941,21 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
+            {pinnedSpecies.size > 0 && (
+              <button
+                onClick={() => setShowOnlyStarred(!showOnlyStarred)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  showOnlyStarred
+                    ? "bg-amber-500 text-white"
+                    : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                }`}
+              >
+                <svg className="w-4 h-4" fill={showOnlyStarred ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Starred ({pinnedSpecies.size})
+              </button>
+            )}
             {Array.from(selectedCategories).map(cat => (
               <button
                 key={cat}
@@ -967,9 +977,9 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 <span className="text-xs">×</span>
               </button>
             ))}
-            {(selectedCategories.size > 0 || selectedYearRanges.size > 0) && (
+            {(selectedCategories.size > 0 || selectedYearRanges.size > 0 || showOnlyStarred) && (
               <button
-                onClick={() => { setSelectedCategories(new Set()); setSelectedYearRanges(new Set()); }}
+                onClick={() => { setSelectedCategories(new Set()); setSelectedYearRanges(new Set()); setShowOnlyStarred(false); }}
                 className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 underline"
               >
                 Clear all
@@ -977,11 +987,6 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
             )}
             <span className="text-sm text-zinc-500">
               {filteredSpecies.length} species
-              {pinnedSpecies.size > 0 && (
-                <span className="ml-2 text-amber-600 dark:text-amber-400">
-                  ({pinnedSpecies.size} pinned)
-                </span>
-              )}
             </span>
           </div>
         </div>
@@ -1050,7 +1055,7 @@ export default function RedListView({ onTaxonChange }: RedListViewProps) {
                 return (
                   <React.Fragment key={s.sis_taxon_id}>
                   <tr
-                    className={`hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer ${selectedSpeciesKey === s.sis_taxon_id ? "bg-zinc-100 dark:bg-zinc-800" : ""} ${isPinned ? "bg-amber-50 dark:bg-amber-900/10" : ""}`}
+                    className={`hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer ${selectedSpeciesKey === s.sis_taxon_id ? "bg-zinc-100 dark:bg-zinc-800" : ""}`}
                     onClick={() => setSelectedSpeciesKey(selectedSpeciesKey === s.sis_taxon_id ? null : s.sis_taxon_id)}
                   >
                     <td className="px-2 py-2 text-center">
